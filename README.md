@@ -32,6 +32,12 @@ Reference-style projects:
 - [VOIDRUNNER](https://github.com/pinguy/VOIDRUNNER) - a native Linux procedural space-trader / combat game released as a 32 KiB-class runnable.
 - [nervk / murkk](https://github.com/pinguy/murkk) - a 96K-spirit native Linux procedural game lineage with runtime-synthesized visuals, level, audio, and font data.
 
+The `examples/` directory includes real single-file sources from that lineage:
+
+- `examples/VOIDRUNNER.c`
+- `examples/nervk.c`
+- `examples/hello.c`
+
 ## Quick Start
 
 CLI:
@@ -95,10 +101,19 @@ The output is an executable shell stub with compressed ELF payload appended. Run
 ./examples/hello
 ```
 
+Build the real examples without writing generated runners into the repo:
+
+```bash
+mkdir -p /tmp/copt-examples
+OUT=/tmp/copt-examples/VOIDRUNNER ./build_asm_syscall.sh examples/VOIDRUNNER.c
+OUT=/tmp/copt-examples/nervk ./build_asm_syscall.sh examples/nervk.c
+```
+
 ## Documentation
 
 - [Usage](docs/USAGE.md)
 - [Demoscene Workflow](docs/DEMOSCENE-WORKFLOW.md)
+- [Examples](docs/EXAMPLES.md)
 - [Build Pipeline](docs/BUILD-PIPELINE.md)
 - [Troubleshooting](docs/TROUBLESHOOTING.md)
 

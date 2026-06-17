@@ -41,6 +41,8 @@ The build script prints `DT_NEEDED` for the raw ELF. If your C file uses SDL, Op
 
 For demoscene-style release builds, test the generated runner itself, not just the raw ELF. The runner also needs `xz` on the target system because it self-extracts from raw x86+LZMA data.
 
+The included VOIDRUNNER/nervk examples are interactive SDL/OpenGL programs. They need a real display or headless GL setup. `SDL_VIDEODRIVER=dummy` is not a full runtime smoke for them.
+
 ## SDL Headers Are Minimal
 
 The headers in `compat/SDL2/` are compatibility stubs for tiny single-file builds. They are not full SDL development headers.

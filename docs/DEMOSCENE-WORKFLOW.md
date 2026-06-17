@@ -17,6 +17,8 @@ The workflow was shaped by projects like:
 
 These are native Linux procedural game/intros where the interesting work is not just making a file small, but keeping enough actual game or demo inside the size limit to still feel real.
 
+`examples/VOIDRUNNER.c` and `examples/nervk.c` are included so users can build real productions, not only toy programs.
+
 ## Good Fit
 
 C Optimizer is a good fit when:
@@ -76,6 +78,8 @@ C Optimizer does not rewrite the source to do that automatically. It gives you t
 6. Use `readelf -d` output to check dynamic dependencies.
 7. Iterate on the C source if the runner is too large or the dependency list is not what you expected.
 
+For included real examples, see [Examples](EXAMPLES.md).
+
 ## What The Final Runner Is
 
 The output file is a shell stub plus compressed native ELF payload.
@@ -83,4 +87,3 @@ The output file is a shell stub plus compressed native ELF payload.
 At runtime it extracts to `/tmp`, marks the payload executable, runs it with the original arguments, then exits with the payload's exit code.
 
 That makes it convenient for demoscene-style release artefacts: one runnable file, no asset directory, no install step.
-

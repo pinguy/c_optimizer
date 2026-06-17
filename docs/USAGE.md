@@ -16,6 +16,12 @@ VOIDRUNNER.c -> voidrunner
 my demo.c    -> my-demo
 ```
 
+To keep generated output elsewhere, call the lower-level builder with `OUT`:
+
+```bash
+OUT=/tmp/VOIDRUNNER ./build_asm_syscall.sh examples/VOIDRUNNER.c
+```
+
 ## Use The File Picker
 
 Run:
@@ -84,3 +90,5 @@ For tiny SDL/OpenGL productions, the smallest release source often uses `dlopen`
 Generated runners are output beside selected source files. They are not intended to be committed unless you explicitly want to publish a built artifact.
 
 The C Optimizer tool itself is Apache-2.0 licensed. Generated runners follow the license/ownership of the C source they were built from.
+
+The checked-in real examples keep their own upstream/source licensing context; use them as build references and learning material.
