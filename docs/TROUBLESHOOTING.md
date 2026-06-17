@@ -39,6 +39,8 @@ readelf -d /path/to/raw-or-output
 
 The build script prints `DT_NEEDED` for the raw ELF. If your C file uses SDL, OpenGL, math, or other libraries directly, you may need to load them dynamically from your program or adapt the linker flags.
 
+For demoscene-style release builds, test the generated runner itself, not just the raw ELF. The runner also needs `xz` on the target system because it self-extracts from raw x86+LZMA data.
+
 ## SDL Headers Are Minimal
 
 The headers in `compat/SDL2/` are compatibility stubs for tiny single-file builds. They are not full SDL development headers.
@@ -50,6 +52,14 @@ If your source needs more SDL definitions, either add them to the compatibility 
 That is allowed. The runner still works.
 
 The builder reports the final runner using the best-fit IEC unit and exact byte/bit counts. Try reducing source size, assets, strings, static data, or library references if the output needs to be smaller.
+
+Useful sizecoding checks:
+
+- Look at `DT_NEEDED`; direct SDL/OpenGL/libm links can cost more than loading them dynamically.
+- Remove unused compatibility header declarations from the source path when experimenting.
+- Delete debug strings and large text blocks.
+- Prefer deterministic procedural generation over embedded static data when it compresses better.
+- Keep measuring the final runner; source size is only a hint.
 
 ## Temporary Files
 

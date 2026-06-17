@@ -2,7 +2,7 @@
 
 C Optimizer turns a single C source file into a tiny runnable Linux executable wrapper.
 
-It was built for small demo/game-style C projects where the whole project lives in one `.c` file and the output size matters more than conventional build ergonomics.
+It was built for demoscene / sizecoding projects like **VOIDRUNNER** and **nervk**: native Linux games or intros where the whole project lives in one `.c` file, assets are generated at runtime, and the release artefact is judged by bytes on disk.
 
 ## What It Does
 
@@ -15,6 +15,22 @@ It was built for small demo/game-style C projects where the whole project lives 
 - Reports output sizes using the best-fit IEC unit plus exact bytes and bits.
 
 The original `.c` file is left untouched.
+
+## What It Is For
+
+C Optimizer is aimed at projects with constraints like:
+
+- one translation unit
+- no external asset files
+- procedural textures, geometry, maps, audio, or UI generated in code
+- dynamic use of system libraries where useful
+- Linux x86_64 release builds where the final runnable size matters
+- fast iteration from a single C file to a releasable packed runner
+
+Reference-style projects:
+
+- [VOIDRUNNER](https://github.com/pinguy/VOIDRUNNER) - a native Linux procedural space-trader / combat game released as a 32 KiB-class runnable.
+- [nervk / murkk](https://github.com/pinguy/murkk) - a 96K-spirit native Linux procedural game lineage with runtime-synthesized visuals, level, audio, and font data.
 
 ## Quick Start
 
@@ -82,6 +98,7 @@ The output is an executable shell stub with compressed ELF payload appended. Run
 ## Documentation
 
 - [Usage](docs/USAGE.md)
+- [Demoscene Workflow](docs/DEMOSCENE-WORKFLOW.md)
 - [Build Pipeline](docs/BUILD-PIPELINE.md)
 - [Troubleshooting](docs/TROUBLESHOOTING.md)
 
@@ -100,4 +117,4 @@ This is intentionally narrow:
 - No Make/CMake integration.
 - Linux x86_64 only.
 
-It is a tiny build tool for tiny C things, not a general C build system.
+It is a tiny release-build tool for tiny C productions, not a general C build system.

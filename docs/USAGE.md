@@ -77,6 +77,8 @@ That means a selected file can include local headers next to itself, and can als
 #include <SDL2/SDL_opengl.h>
 ```
 
+For tiny SDL/OpenGL productions, the smallest release source often uses `dlopen`/`dlsym` for heavier libraries and keeps only `libc` as a direct dependency. C Optimizer will show the raw ELF's `DT_NEEDED` list at the end of each build so you can see what the linker actually kept.
+
 ## What Gets Published
 
 Generated runners are output beside selected source files. They are not intended to be committed unless you explicitly want to publish a built artifact.

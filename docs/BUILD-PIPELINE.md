@@ -1,6 +1,6 @@
 # Build Pipeline
 
-C Optimizer is a size-focused wrapper around GCC, stripping, and compression.
+C Optimizer is a size-focused wrapper around GCC, stripping, and compression. It is tuned for one-file Linux demoscene productions where the final packed runner is the release artefact.
 
 ## 1. Custom Entry Point
 
@@ -29,6 +29,8 @@ This avoids normal C runtime startup files and keeps the executable smaller.
 - reduced unwind/metadata output
 
 The result is a raw ELF executable before compression.
+
+The selected source file's directory is added to the include path, followed by `compat/`, so a production can carry tiny local headers or use the bundled minimal SDL compatibility headers.
 
 ## 3. Strip And Section Strip
 
@@ -61,6 +63,8 @@ The script tries combinations of:
 
 Each candidate is decompressed and compared against the original stripped ELF. The smallest verified candidate wins.
 
+The x86 BCJ filter is useful for this kind of code because it rewrites relative call/jump targets into a form that LZMA can compress more effectively.
+
 ## 5. Self-Extracting Runner
 
 The final output is a shell script followed by compressed binary data.
@@ -72,6 +76,8 @@ At runtime it:
 3. Marks it executable.
 4. Runs it with the original arguments.
 5. Exits with the wrapped program's exit code.
+
+The runner intentionally depends on `xz` being available on the target Linux system.
 
 ## 6. Size Report
 
