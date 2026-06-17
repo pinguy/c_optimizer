@@ -33,13 +33,6 @@ typedef float    f32;
 /* ----- tiny mem (kept explicit; compiler may still emit libc mem* for inits) */
 static void* m_set(void* d, int c, u64 n){ u8* p=d; while(n--) *p++=(u8)c; return d; }
 static void* m_cpy(void* d, const void* s, u64 n){ u8* a=d; const u8* b=s; while(n--) *a++=*b++; return d; }
-static u64   s_len(const char* s){ u64 n=0; while(s[n]) n++; return n; }
-
-/* ----- raw stdout (no stdio) for the version banner ----------------------- */
-static void sys_write(const char* s, u64 n){
-    __asm__ volatile("syscall"::"a"(1L),"D"(1L),"S"(s),"d"(n):"rcx","r11","memory");
-}
-static void puts_raw(const char* s){ sys_write(s, s_len(s)); }
 
 /* ============================ math (no libm) ============================== */
 #define PI   3.14159265f
@@ -140,6 +133,7 @@ FN(void,  SDL_GL_DeleteContext,(void*))
 FN(int,   SDL_GL_SetSwapInterval,(int))
 FN(void,  SDL_GL_SwapWindow,(void*))
 FN(int,   SDL_PollEvent,(void*))
+FN(int,   SDL_SetWindowFullscreen,(void*,u32))
 FN(u32,   SDL_GetRelativeMouseState,(int*,int*))
 FN(int,   SDL_SetRelativeMouseMode,(int))
 FN(const u8*, SDL_GetKeyboardState,(int*))
@@ -195,6 +189,7 @@ static void* gl_lib; static void* sdl_lib;
 #define SDL_INIT_VIDEO 0x00000020u
 #define SDL_INIT_AUDIO 0x00000010u
 #define SDL_WINDOW_OPENGL 0x00000002u
+#define SDL_WINDOW_FULLSCREEN_DESKTOP 0x00001001u
 #define SDL_WINDOWPOS_CENTERED 0x2FFF0000
 #define SDL_GL_RED_SIZE 0
 #define SDL_GL_GREEN_SIZE 1
@@ -208,6 +203,8 @@ static void* gl_lib; static void* sdl_lib;
 #define SDL_GL_CONTEXT_PROFILE_MASK 21
 #define SDL_GL_CONTEXT_PROFILE_COMPATIBILITY 0x0002
 #define SDL_QUIT 0x100
+#define SDL_WINDOWEVENT 0x200
+#define SDL_WINDOWEVENT_SIZE_CHANGED 5
 #define SDL_BUTTON_LMASK 1
 #define SDL_BUTTON_RMASK 4
 #define AUDIO_S16SYS 0x8010
@@ -237,6 +234,7 @@ static void* gl_lib; static void* sdl_lib;
 #define SC_BACKSPACE 42
 #define SC_TAB 43
 #define SC_SPACE 44
+#define SC_F11 68
 #define SC_RIGHT 79
 #define SC_LEFT 80
 #define SC_DOWN 81
@@ -642,18 +640,12 @@ static struct {
 
 static char cmdr_name[12]="PINGUY";
 static char title_name[12]="PINGUY";
-static char title_seed[12]="";
-static int  title_field=0; /* 0 commander, 1 seed */
-static u32  title_default_seed=0, title_scene_seed=0;
-static int  title_scene_ready=0;
+static u32  title_default_seed=0;
 
 static void strset_lim(char* d,const char* s,int cap){ int i=0; while(s[i]&&i<cap-1){ d[i]=s[i]; i++; } d[i]=0; }
-static void u32_dec(char* out,u32 v){ char tmp[12]; int i=0; if(!v) tmp[i++]='0'; while(v&&i<11){ tmp[i++]='0'+(v%10); v/=10; } int j=0; while(i) out[j++]=tmp[--i]; out[j]=0; }
 static int slen_local(const char* s){ int i=0; while(s[i]) i++; return i; }
 static void title_add(char* s,int cap,char c){ int n=slen_local(s); if(n<cap-1){ s[n]=c; s[n+1]=0; } }
 static void title_back(char* s){ int n=slen_local(s); if(n>0) s[n-1]=0; }
-static u32 title_parse_seed(const char* s){ u32 v=0; while(*s>='0'&&*s<='9'){ v=v*10+(u32)(*s-'0'); s++; } return v; }
-static u32 title_seed_value(void){ return title_seed[0]?title_parse_seed(title_seed):title_default_seed; }
 
 static void sfx_play(int type){
     static const f32 dur[]={0.12f,0.55f,0.18f,0.46f,0.55f,0.38f,1.05f,0.08f,0.34f,0.20f};
@@ -906,17 +898,7 @@ static void new_game(u32 master){
 static int cargo_used(void){ int t=0; for(int i=0;i<NCOM;i++) t+=G.cargo[i]; return t; }
 static int affordable_units(int c){ int free=G.cargo_max-cargo_used(); if(free<=0) return 0; int price=gal[G.cur].price[c]; if(price<=0) return 0; int u=G.credits/price; return u>free?free:u; }
 static const char* lifeform_idx(int idx){
-    static char out[40]; int k=0; u32 h=hash32(gal[idx].seed^0x51A7);
-    if((h&7)==0) return "HUMAN COLONIALS";
-    static const char* a1[]={"LARGE","FIERCE","SMALL",""};
-    static const char* a2[]={"GREEN","RED","YELLOW","BLUE","BLACK","HARMLESS",""};
-    static const char* a3[]={"SLIMY","BUG-EYED","HORNED","BONY","FAT","FURRY",""};
-    static const char* sp[]={"RODENTS","FROGS","LIZARDS","LOBSTERS","BIRDS","HUMANOIDS","FELINES","INSECTOIDS"};
-    const char* x=a1[(h>>3)%4]; if(x[0]){ bcat(out,&k,x); bcat(out,&k," "); }
-    x=a2[(h>>7)%7]; if(x[0]){ bcat(out,&k,x); bcat(out,&k," "); }
-    x=a3[(h>>11)%7]; if(x[0]){ bcat(out,&k,x); bcat(out,&k," "); }
-    bcat(out,&k,sp[(h>>16)%8]);
-    return out;
+    return (hash32(gal[idx].seed)&1) ? "HUMAN COLONIALS" : "UNKNOWN LIFEFORM";
 }
 static int population_idx(int idx){ System* s=&gal[idx]; return 1 + ((hash32(s->seed^0x1234)%88) + s->tech*3)/10; }
 static int radius_idx(int idx){ return 3200 + (hash32(gal[idx].seed^0x7777)%4200); }
@@ -1893,8 +1875,8 @@ static void draw_market(void){
         text(520,y,1.7f,itos(G.cargo[c]),hl*0.7f,hl*0.8f,hl*0.9f);
     }
     f32 yb=200+NCOM*34+30;
-    text(60,yb,1.6f,"UP/DOWN SELECT   RIGHT BUY   LEFT SELL",0.55f,0.6f,0.65f);
-    text(60,yb+26,1.5f,"COMMODITY EXCHANGE ONLY - FUEL AND HARDWARE ARE IN EQUIP SHIP",0.55f,0.6f,0.65f);
+    text(60,yb,1.6f,"UP/DN BUY/SELL",0.55f,0.6f,0.65f);
+    text(60,yb+26,1.5f,"FUEL/HARDWARE IN EQUIP",0.55f,0.6f,0.65f);
     { int d=map_best_dest(), bc=0, bu=0, tot=best_trade_total_to(d,&bc,&bu); 
       if(tot>0&&bu>0){ 
         char b1[20]; int k1=0; bcat(b1,&k1,"BEST STARTER");
@@ -1971,7 +1953,7 @@ static void draw_manifest(void){
     label_num(60,H-145,1.65f,"USED",cargo_used(),0.78f,0.90f,0.85f);
     label_num(180,H-145,1.65f,"CAP",G.cargo_max,0.78f,0.90f,0.85f);
     label_num(340,H-145,1.65f,"HOLD VALUE",cargo_value_here(),0.88f,1.00f,0.74f);
-    if(illegal_cargo_count()>0) text(60,H-104,1.55f,"WARNING: CONTRABAND MAY TRIGGER POLICE SCANS",1.0f,0.42f,0.34f);
+    if(illegal_cargo_count()>0) text(60,H-104,1.55f,"CONTRABAND WARNING",1.0f,0.42f,0.34f);
     else text(60,H-122,1.55f,"NO CONTRABAND REGISTERED",0.55f,0.90f,0.62f);
     draw_station_nav(H);
     end2d();
@@ -1983,7 +1965,7 @@ static void draw_equipment(void){
     p_glColor4f(0.035f,0.044f,0.060f,0.96f);
     p_glBegin(GL_QUADS); p_glVertex2f(0,0);p_glVertex2f(W,0);p_glVertex2f(W,H);p_glVertex2f(0,H);p_glEnd();
     text(60,58,2.8f,"EQUIP SHIP",0.62f,0.96f,0.76f);
-    text(60,96,1.45f,"SHIP SERVICES: FUEL, MISSILES AND WORKING HARDWARE",0.48f,0.66f,0.70f);
+    text(60,96,1.45f,"SHIP SERVICES",0.48f,0.66f,0.70f);
     label_num(60,128,1.55f,"TECH LEVEL",s->tech,0.62f,0.82f,0.90f);
     label_num(260,128,1.55f,"CASH",G.credits,0.86f,1.00f,0.75f);
     label_num(450,128,1.55f,"FUEL",G.fuel,0.88f,0.75f,0.42f);
@@ -2015,7 +1997,7 @@ static void draw_equipment(void){
         else text(820,y,1.35f,"AVAILABLE",0.62f,0.90f,0.62f);
     }
 
-    text(60,H-122,1.45f,"UP/DOWN SELECT   RIGHT/ENTER BUY",0.55f,0.66f,0.68f);
+    text(60,H-122,1.45f,"UP/DN RIGHT BUY",0.55f,0.66f,0.68f);
     draw_station_nav(H);
     end2d();
 }
@@ -2061,7 +2043,7 @@ static void draw_data_page(void){
     { char b[80]; int k=0; bcat(b,&k,"RANGE: "); bnum(b,&k,(int)G.jump_range); bcat(b,&k," LIGHT YEARS"); text(rx,388,1.5f,b,0.60f,0.82f,0.95f); }
     text(rx,430,1.5f,can_jump_idx(idx)?"JUMP ROUTE AVAILABLE":"ROUTE NOT AVAILABLE",can_jump_idx(idx)?0.58f:0.95f,can_jump_idx(idx)?0.95f:0.42f,0.58f);
 
-    text(60,H-126,1.35f,"WORLDATA TEXT IS SEED-GENERATED. PRICES ONLY GUARANTEED IN PORT.",0.50f,0.58f,0.60f);
+    text(60,H-126,1.35f,"PRICES CHANGE BY PORT.",0.50f,0.58f,0.60f);
     draw_station_nav(H);
     end2d();
 }
@@ -2151,12 +2133,12 @@ static void draw_map(void){
     } else text(px,py+24,1.5f,"NO OBVIOUS PROFIT",0.65f,0.55f,0.45f);
     if(cargo_used()>0){ char b[28]; char* a=itos(held); int k=0; b[k++]='H';b[k++]='E';b[k++]='L';b[k++]='D';b[k++]=' ';b[k++]='C';b[k++]='A';b[k++]='R';b[k++]='G';b[k++]='O';b[k++]=':';b[k++]=' '; int j=0; while(a[j])b[k++]=a[j++]; b[k]=0; text(px,py+94,1.5f,b,held>=0?0.6f:0.9f,held>=0?0.85f:0.35f,0.55f); }
 
-    text(60,H-76,1.5f,"ARROWS SELECT REACHABLE   SHIFT+ARROWS ALL   TAB BEST RUN",0.55f,0.6f,0.65f);
-    text(60,H-50,1.7f,"ENTER/J JUMP   5/6 DATA ON SYSTEM   M/BKSP BACK",0.62f,0.75f,0.72f);
+    text(60,H-76,1.5f,"ARROWS SELECT TAB BEST",0.55f,0.6f,0.65f);
+    text(60,H-50,1.7f,"ENTER/J JUMP 5/6 DATA M BACK",0.62f,0.75f,0.72f);
     if(can_jump_idx(G.mapsel)) text(60,H-24,1.8f,"> JUMP READY",0.5f,0.95f,0.7f);
     else if(G.mapsel==G.cur) text(60,H-24,1.7f,"NO DESTINATION SELECTED",0.9f,0.55f,0.4f);
     else if(d>G.jump_range) text(60,H-24,1.7f,"OUT OF JUMP RANGE",0.95f,0.45f,0.35f);
-    else text(60,H-24,1.7f,"NOT ENOUGH FUEL - BUY FUEL IN EQUIP SHIP",0.95f,0.45f,0.35f);
+    else text(60,H-24,1.7f,"BUY FUEL IN EQUIP",0.95f,0.45f,0.35f);
     end2d();
 }
 
@@ -2311,85 +2293,37 @@ static void audio_cb(void* ud, u8* stream, int len){
 
 
 /* ============================ title screen ================================ */
-static void title_prepare_scene(void){
-    u32 sd=title_seed_value();
-    if(title_scene_ready && title_scene_seed==sd) return;
-    u32 keepadev=G.adev; int ww=G.win_w?G.win_w:1280, wh=G.win_h?G.win_h:720;
-    new_game(sd);
-    G.adev=keepadev; G.win_w=ww; G.win_h=wh; G.state=ST_TITLE;
-    G.ne=0; G.docked=0; G.alert_t=0; G.target=-1;
-    for(int i=0;i<MAXB;i++) G.beam[i].ttl=0;
-    for(int i=0;i<MAXM;i++) G.missile[i].alive=0;
-    title_scene_seed=sd; title_scene_ready=1;
-}
-static void title_system_camera(void){
-    title_prepare_scene();
-    f32 sec=(f32)p_SDL_GetTicks()*0.001f;
-    int prim[16], np=0;
-    for(int i=0;i<G.nb && np<16;i++) if(G.body[i].parent<0) prim[np++]=i;
-    int nstop=np+1; if(nstop<1)nstop=1;
-    int stop=((int)(sec/8.5f))%nstop;
-    f32 local=(sec-8.5f*f_floor(sec/8.5f))/8.5f;
-    f32 ang=local*TAU*0.56f + 0.45f*stop;
-    V3 anchor=G.station, focus=G.station; f32 rr=520.0f, y=120.0f;
-    if(stop<np){
-        int bi=prim[stop]; anchor=body_draw_pos(bi); focus=anchor;
-        rr=G.body[bi].r*3.0f + 330.0f;
-        y=G.body[bi].r*0.60f + 120.0f;
-    } else {
-        anchor=G.station; focus=G.station; rr=420.0f; y=115.0f;
-    }
-    V3 cam=v(anchor.x+f_cos(ang)*rr, anchor.y+y+40.0f*f_sin(sec*0.37f), anchor.z+f_sin(ang)*rr);
-    G.ppos=cam; G.pvel=v(0,0,0);
-    orient_player_to(focus);
-    G.t=sec;
-    set_view();
-    p_glDisable(GL_TEXTURE_2D); p_glEnable(GL_DEPTH_TEST);
-    draw_starfield();
-    draw_world();
-}
-
 static void title_start_game(void){
     if(!title_name[0]) strset_lim(title_name,"PINGUY",12);
     strset_lim(cmdr_name,title_name,12);
-    new_game(title_seed_value());
+    u32 adev=G.adev;
+    new_game(title_default_seed);
+    G.adev=adev;
     p_SDL_SetRelativeMouseMode(0);
 }
 static void update_title(const u8* ks){
-    if(edge(ks,SC_TAB)||edge(ks,SC_UP)||edge(ks,SC_DOWN)) title_field=1-title_field;
-    if(edge(ks,SC_BACKSPACE)){ if(title_field){ title_back(title_seed); title_scene_ready=0; } else title_back(title_name); }
-    for(int i=0;i<26;i++) if(edge(ks,4+i) && !title_field) title_add(title_name,12,(char)('A'+i));
-    if(title_field){
-        int was=slen_local(title_seed);
-        if(edge(ks,SC_1)) title_add(title_seed,12,'1');
-        if(edge(ks,SC_2)) title_add(title_seed,12,'2');
-        if(edge(ks,SC_3)) title_add(title_seed,12,'3');
-        if(edge(ks,SC_4)) title_add(title_seed,12,'4');
-        if(edge(ks,SC_5)) title_add(title_seed,12,'5');
-        if(edge(ks,SC_6)) title_add(title_seed,12,'6');
-        if(edge(ks,SC_7)) title_add(title_seed,12,'7');
-        if(edge(ks,SC_8)) title_add(title_seed,12,'8');
-        if(edge(ks,SC_9)) title_add(title_seed,12,'9');
-        if(edge(ks,SC_0)) title_add(title_seed,12,'0');
-        if(slen_local(title_seed)!=was) title_scene_ready=0;
-    }
+    if(edge(ks,SC_BACKSPACE)) title_back(title_name);
+    for(int i=0;i<26;i++) if(edge(ks,4+i)) title_add(title_name,12,(char)('A'+i));
     if(edge(ks,SC_RETURN)||edge(ks,SC_SPACE)) title_start_game();
 }
 static void draw_title_screen(void){
     f32 W=G.win_w?G.win_w:1280, H=G.win_h?G.win_h:720;
-    title_system_camera();
+    f32 far=7200.0f;
+    for(int i=0;i<G.nb;i++) if(G.body[i].parent<0){ f32 d=vlen(G.body[i].pos); if(d>far) far=d; }
+    G.t=(f32)p_SDL_GetTicks()*0.001f;
+    f32 a=G.t*0.10f;
+    G.ppos=v(f_cos(a)*far*1.05f, far*0.27f, f_sin(a)*far*1.05f);
+    orient_player_to(G.star[0].pos);
+    set_view();
+    draw_starfield();
+    draw_world();
     begin2d();
-    text(W/2-textw("VOIDRUNNER",4.5f)/2,48,4.5f,"VOIDRUNNER",0.58f,1.0f,0.78f);
-    text(W/2-textw("TRADE  FIGHT  RUN  DOCK",1.45f)/2,98,1.45f,"TRADE  FIGHT  RUN  DOCK",0.52f,0.68f,0.74f);
-    { char sys[56]; int k=0; bcat(sys,&k,"SYSTEM TOUR: "); bcat(sys,&k,gal[G.cur].name); text(W/2-textw(sys,1.18f)/2,126,1.18f,sys,0.60f,0.78f,0.82f); }
-    panel(W/2-260,H-210,520,150,0.08f,0.80f,1.0f);
-    text(W/2-220,H-182,1.35f,"COMMANDER NAME",0.45f,0.68f,0.76f);
-    text(W/2-220,H-154,2.0f,title_name[0]?title_name:"_",title_field?0.46f:0.78f,title_field?0.62f:1.0f,title_field?0.70f:0.78f);
-    text(W/2-220,H-112,1.35f,"RUN SEED",0.45f,0.68f,0.76f);
-    text(W/2-220,H-84,2.0f,title_seed[0]?title_seed:"RANDOM",title_field?0.78f:0.46f,title_field?1.0f:0.62f,title_field?0.78f:0.70f);
-    if(!title_field) text(W/2+190,H-154,1.3f,"<",0.95f,0.78f,0.34f); else text(W/2+190,H-84,1.3f,"<",0.95f,0.78f,0.34f);
-    text(W/2-textw("TAB SWITCH   BACKSPACE DELETE   ENTER LAUNCH",1.18f)/2,H-42,1.18f,"TAB SWITCH   BACKSPACE DELETE   ENTER LAUNCH",0.55f,0.70f,0.72f);
-    { char sys2[48]; int k=0; bcat(sys2,&k,"SEED SYSTEM: "); bcat(sys2,&k,gal[G.cur].name); text(34,H-42,1.2f,sys2,0.52f,0.68f,0.72f); }
+    text(W/2-textw("VOIDRUNNER",4.5f)/2,58,4.5f,"VOIDRUNNER",0.58f,1.0f,0.78f);
+    text(W/2-textw("TRADE  FIGHT  RUN  DOCK",1.45f)/2,112,1.45f,"TRADE  FIGHT  RUN  DOCK",0.52f,0.68f,0.74f);
+    panel(W/2-245,H-154,490,96,0.08f,0.80f,1.0f);
+    text(W/2-208,H-128,1.35f,"COMMANDER NAME",0.45f,0.68f,0.76f);
+    text(W/2-208,H-100,2.0f,title_name[0]?title_name:"_",0.78f,1.0f,0.78f);
+    text(W/2-textw("BACKSPACE DELETE   ENTER LAUNCH",1.18f)/2,H-36,1.18f,"BACKSPACE DELETE   ENTER LAUNCH",0.55f,0.70f,0.72f);
     end2d();
 }
 
@@ -2406,12 +2340,12 @@ int main(int argc, char** argv){
     int miss=0;
     gl_lib  = dlopen("libGL.so.1", RTLD_NOW|RTLD_GLOBAL);
     sdl_lib = dlopen("libSDL2-2.0.so.0", RTLD_NOW|RTLD_GLOBAL);
-    if(!gl_lib || !sdl_lib){ puts_raw("VOIDRUNNER: cannot dlopen libGL/libSDL2\n"); return 1; }
+    if(!gl_lib || !sdl_lib) return 1;
 
     LSDL(SDL_Init);LSDL(SDL_Quit);LSDL(SDL_GL_SetAttribute);LSDL(SDL_CreateWindow);
     LSDL(SDL_DestroyWindow);LSDL(SDL_GL_CreateContext);LSDL(SDL_GL_DeleteContext);
     LSDL(SDL_GL_SetSwapInterval);LSDL(SDL_GL_SwapWindow);LSDL(SDL_PollEvent);
-    LSDL(SDL_GetRelativeMouseState);LSDL(SDL_SetRelativeMouseMode);LSDL(SDL_GetKeyboardState);
+    LSDL(SDL_SetWindowFullscreen);LSDL(SDL_GetRelativeMouseState);LSDL(SDL_SetRelativeMouseMode);LSDL(SDL_GetKeyboardState);
     LSDL(SDL_GetTicks);LSDL(SDL_Delay);LSDL(SDL_ShowCursor);LSDL(SDL_OpenAudioDevice);LSDL(SDL_PauseAudioDevice);
 
     LGL(glClearColor);LGL(glClear);LGL(glEnable);LGL(glDisable);LGL(glViewport);
@@ -2421,9 +2355,9 @@ int main(int argc, char** argv){
     LGL(glNormal3f);LGL(glTexCoord2f);LGL(glGenTextures);LGL(glBindTexture);
     LGL(glTexParameteri);LGL(glTexImage2D);LGL(glPointSize);LGL(glLineWidth);LGL(glDepthFunc);LGL(glDepthMask);
     LGL(glBlendFunc);LGL(glShadeModel);LGL(glHint);LGL(glLightfv);LGL(glLightModelfv);LGL(glColorMaterial);
-    if(miss){ puts_raw("VOIDRUNNER: missing GL/SDL symbols\n"); return 1; }
+    if(miss) return 1;
 
-    if(p_SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO)!=0){ puts_raw("VOIDRUNNER: SDL_Init failed\n"); return 1; }
+    if(p_SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO)!=0) return 1;
     p_SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,2);
     p_SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,1);
     p_SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
@@ -2435,18 +2369,18 @@ int main(int argc, char** argv){
 
     void* win=p_SDL_CreateWindow("VOIDRUNNER", SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,
                                  1280,720, SDL_WINDOW_OPENGL);
-    if(!win){ puts_raw("VOIDRUNNER: window failed\n"); return 1; }
+    if(!win) return 1;
     void* ctx=p_SDL_GL_CreateContext(win);
-    if(!ctx){ puts_raw("VOIDRUNNER: GL context failed\n"); return 1; }
+    if(!ctx) return 1;
     p_SDL_ShowCursor(0);
     p_SDL_GL_SetSwapInterval(1);
 
     u32 boot_seed=parse_seed(argc, argv);
     title_default_seed=boot_seed;
-    u32_dec(title_seed, boot_seed);
     for(int i=1;i+1<argc;i++) if(streq(argv[i],"--name")) strset_lim(title_name,argv[i+1],12);
     strset_lim(cmdr_name,title_name,12);
-    G.state=ST_TITLE; G.win_w=1280; G.win_h=720;
+    new_game(boot_seed);
+    G.state=ST_TITLE; G.docked=0; G.ne=0; G.alert_t=0; G.target=-1;
 
     /* audio: best-effort */
     AudioSpec want; m_set(&want,0,sizeof(want));
@@ -2462,15 +2396,23 @@ int main(int argc, char** argv){
     p_glViewport(0,0,1280,720);
 
     u32 last=p_SDL_GetTicks();
-    int running=1;
+    int running=1, fullscreen=0;
     u8 ev[64];
     while(running){
         u32 now=p_SDL_GetTicks(); f32 dt=(now-last)/1000.0f; last=now;
         if(dt>0.05f) dt=0.05f;
         if(dt<=0) dt=0.001f;
-        while(p_SDL_PollEvent(ev)){ if(*(u32*)ev==SDL_QUIT) running=0; }
+        while(p_SDL_PollEvent(ev)){
+            u32 et=*(u32*)ev;
+            if(et==SDL_QUIT) running=0;
+            if(et==SDL_WINDOWEVENT && ev[12]==SDL_WINDOWEVENT_SIZE_CHANGED){
+                G.win_w=*(int*)(ev+16); G.win_h=*(int*)(ev+20);
+                p_glViewport(0,0,G.win_w,G.win_h);
+            }
+        }
         const u8* ks=p_SDL_GetKeyboardState(0);
-        if(edge(ks,SC_ESC) && (G.state==ST_FLIGHT||G.state==ST_TITLE)) running=0;
+        if(edge(ks,SC_F11)){ fullscreen=!fullscreen; p_SDL_SetWindowFullscreen(win,fullscreen?SDL_WINDOW_FULLSCREEN_DESKTOP:0); }
+        if(edge(ks,SC_ESC)) running=0;
 
         switch(G.state){
             case ST_TITLE:  update_title(ks); break;

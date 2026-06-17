@@ -56,6 +56,7 @@ static void load_math(void){
   SF(SDL_OpenAudioDevice) \
   SF(SDL_PauseAudioDevice) \
   SF(SDL_PollEvent) \
+  SF(SDL_SetWindowFullscreen) \
   SF(SDL_SetRelativeMouseMode) \
   SF(SDL_SetClipboardText) \
   SF(SDL_GL_SwapWindow) \
@@ -84,6 +85,7 @@ static void load_sdl(void){
 #define SDL_OpenAudioDevice p_SDL_OpenAudioDevice
 #define SDL_PauseAudioDevice p_SDL_PauseAudioDevice
 #define SDL_PollEvent p_SDL_PollEvent
+#define SDL_SetWindowFullscreen p_SDL_SetWindowFullscreen
 #define SDL_SetRelativeMouseMode p_SDL_SetRelativeMouseMode
 #define SDL_SetClipboardText p_SDL_SetClipboardText
 #define SDL_GL_SwapWindow p_SDL_GL_SwapWindow
@@ -121,7 +123,7 @@ static void load_sdl(void){
   BF(glGenTextures) BF(glLoadIdentity) BF(glMatrixMode) BF(glNormal3f) \
   BF(glNormalPointer) BF(glOrtho) BF(glPointSize) BF(glPopMatrix) \
   BF(glPushMatrix) BF(glRotatef) BF(glTexCoord2f) BF(glTexCoordPointer) \
-  BF(glTexImage2D) BF(glTexParameteri) BF(glTranslatef) BF(glVertex2f) BF(glVertex3f) \
+  BF(glTexImage2D) BF(glTexParameteri) BF(glTranslatef) BF(glVertex2f) BF(glVertex3f) BF(glViewport) \
   BF(glVertexPointer)
 
 #define GF(t,n) static t n;
@@ -170,6 +172,7 @@ static void load_gl(void){
 #define glTranslatef p_glTranslatef
 #define glVertex2f p_glVertex2f
 #define glVertex3f p_glVertex3f
+#define glViewport p_glViewport
 #define glVertexPointer p_glVertexPointer
 
 /* ---------------------------------------------------------------- constants */
@@ -2053,7 +2056,7 @@ int main(int argc,char**argv){
   glDisable(GL_CULL_FACE);
   glClearColor(0.012f,0.014f,0.018f,1);
 
-  int running=1,wdown=0,adown=0,sdown=0,ddown=0,mdown=0;
+  int running=1,wdown=0,adown=0,sdown=0,ddown=0,mdown=0,full=0;
   unsigned last=SDL_GetTicks();
   float titleYaw=0;
 
@@ -2061,10 +2064,13 @@ int main(int argc,char**argv){
     SDL_Event ev;
     while(SDL_PollEvent(&ev)){
       if(ev.type==SDL_QUIT)running=0;
+      else if(ev.type==SDL_WINDOWEVENT && ev.window.event==SDL_WINDOWEVENT_SIZE_CHANGED)glViewport(0,0,ev.window.data1,ev.window.data2);
       else if(ev.type==SDL_KEYDOWN||ev.type==SDL_KEYUP){
         int d=ev.type==SDL_KEYDOWN,k=ev.key.keysym.sym,sc=ev.key.keysym.scancode;
         if(sc>=4&&sc<=29)k='a'+sc-4; else if(sc>=30&&sc<=38)k='1'+sc-30; else if(sc==39)k='0'; else if(sc==40)k=SDLK_RETURN; else if(sc==41)k=SDLK_ESCAPE; else if(sc==42)k=SDLK_BACKSPACE; else if(sc==43)k=SDLK_TAB;
         if(k>='A'&&k<='Z')k+=32;
+        if(d&&k==SDLK_ESCAPE){running=0;continue;}
+        if(d&&k==SDLK_F11){full^=1;SDL_SetWindowFullscreen(win,full?SDL_WINDOW_FULLSCREEN_DESKTOP:0);continue;}
         if(d&&gstate==ST_TITLE){
           int h=(k>='0'&&k<='9')?k-'0':(k>='a'&&k<='f')?k-'a'+10:-1;
           if(seedEdit==1){
@@ -2095,7 +2101,6 @@ int main(int argc,char**argv){
           case SDLK_3: if(d)pweapon=2; break;
           case SDLK_m: if(d)mapMode^=1; break;
           case SDLK_TAB: if(d)mapMode|=2; else mapMode&=~2; break;
-          case SDLK_ESCAPE: if(d)running=0; break;
         }
       }
       else if(ev.type==SDL_MOUSEMOTION && gstate==ST_PLAY){
