@@ -78,6 +78,8 @@ C Optimizer does not rewrite the source to do that automatically. It gives you t
 6. Use `readelf -d` output to check dynamic dependencies.
 7. Iterate on the C source if the runner is too large or the dependency list is not what you expected.
 
+Compiler version matters for the final byte count. Different GCC releases can produce similarly sized raw ELFs that compress differently after x86 BCJ and LZMA. For the included VOIDRUNNER example, Debian GCC 14 currently produces a smaller final runner than the local GCC 15/16 builds; see [Examples](EXAMPLES.md#debian-gcc-14-size-build).
+
 For included real examples, see [Examples](EXAMPLES.md).
 
 ## What The Final Runner Is
