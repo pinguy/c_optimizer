@@ -1,85 +1,81 @@
 # Examples
 
-The repository includes three example sources:
+The repository includes two example sources:
 
-- `examples/hello.c` - minimal sanity check.
 - `examples/VOIDRUNNER.c` - real single-file procedural space-trader / combat game source.
 - `examples/nervk.c` - real single-file 96K-spirit procedural game source.
 
 The real examples are intentionally large enough to show why C Optimizer exists: they generate assets at runtime, use a single C translation unit, and benefit from the custom `_start`, stripping, BCJ, LZMA, and shell-runner path.
 
-## Minimal Example
+## Quick Start
 
 ```bash
-./run_c_optimizer.sh examples/hello.c
-./examples/hello
-rm -f examples/hello
+./build_gcc9_bullseye.sh examples/nervk.c
 ```
 
 Expected shape:
 
 ```text
-[build] runner:   505 B (505 bytes, 4,040 bits)
-hello from c_optimizer
+nervk:
+  strip:    71.4 KiB (73,088 bytes, 584,704 bits)
+  sstrip:   70.2 KiB (71,856 bytes, 574,848 bits)
+  bcj/lzma: 30.6 KiB (31,325 bytes, 250,600 bits)
+  runner:   30.7 KiB (31,472 bytes, 251,776 bits)
+  NEEDED:   libdl.so.2
+  NEEDED:   libc.so.6
 ```
 
-Exact size can vary by compiler/binutils/xz versions.
+Exact sizes vary by compiler/binutils/xz versions. The first GCC 9 wrapper run builds a local Podman image; later runs reuse it.
 
 ## Build The Real Examples
 
-Use `OUT=...` to keep generated runners out of the repo:
+By default, generated runners are written beside the selected source file. The example outputs below are ignored by git:
 
 ```bash
-rm -rf /tmp/copt-real-examples
-mkdir -p /tmp/copt-real-examples
-
-OUT=/tmp/copt-real-examples/VOIDRUNNER ./build_asm_syscall.sh examples/VOIDRUNNER.c
-OUT=/tmp/copt-real-examples/nervk ./build_asm_syscall.sh examples/nervk.c
+./build_gcc9_bullseye.sh examples/nervk.c
+./build_gcc9_bullseye.sh examples/VOIDRUNNER.c
 ```
 
-On the current reference machine, those build smoke tests produced:
+On the current reference machine, the GCC 9 wrapper produced:
 
 ```text
-VOIDRUNNER:
-  strip:    82.5 KiB (84,448 bytes, 675,584 bits)
-  sstrip:   81.2 KiB (83,136 bytes, 665,088 bits)
-  bcj/lzma: 33.0 KiB (33,787 bytes, 270,296 bits)
-  runner:   33.1 KiB (33,934 bytes, 271,472 bits)
-  NEEDED:   libc.so.6
-
 nervk:
-  strip:    70.1 KiB (71,824 bytes, 574,592 bits)
-  sstrip:   68.9 KiB (70,512 bytes, 564,096 bits)
-  bcj/lzma: 31.0 KiB (31,694 bytes, 253,552 bits)
-  runner:   31.1 KiB (31,841 bytes, 254,728 bits)
+  strip:    71.4 KiB (73,088 bytes, 584,704 bits)
+  sstrip:   70.2 KiB (71,856 bytes, 574,848 bits)
+  bcj/lzma: 30.6 KiB (31,325 bytes, 250,600 bits)
+  runner:   30.7 KiB (31,472 bytes, 251,776 bits)
+  NEEDED:   libdl.so.2
   NEEDED:   libc.so.6
-```
 
-Treat those as examples, not guaranteed byte-for-byte promises.
-
-## GCC 9 Bullseye Size Build
-
-Tiny sizecoding builds are sensitive to compiler, binutils, and xz versions. The same source can produce the same or similar raw ELF size but compress differently after x86 BCJ and LZMA because the machine-code layout changed.
-
-For `examples/VOIDRUNNER.c`, Debian Bullseye `gcc-9 (Debian 9.3.0-22) 9.3.0` produced the smallest tested runner so far:
-
-```text
-VOIDRUNNER with Debian GCC 9.3.0-22, binutils 2.35.2, xz 5.2.5:
+VOIDRUNNER:
   strip:    82.4 KiB (84,368 bytes, 674,944 bits)
   sstrip:   81.2 KiB (83,136 bytes, 665,088 bits)
   bcj/lzma: 32.6 KiB (33,396 bytes, 267,168 bits)
   runner:   32.8 KiB (33,543 bytes, 268,344 bits)
+  NEEDED:   libdl.so.2
 ```
 
-Use the bundled wrapper to reproduce that toolchain without changing the host system:
+Treat those as examples, not guaranteed byte-for-byte promises.
+
+## GCC 9 Size Difference
+
+Tiny sizecoding builds are sensitive to compiler, binutils, and xz versions. The same source can produce the same or similar raw ELF size but compress differently after x86 BCJ and LZMA because the machine-code layout changed.
+
+Compared with the host GCC 16 build on the current reference machine, the GCC 9 wrapper saved:
+
+```text
+Source      Host GCC 16 runner   GCC 9 Bullseye runner   Saved
+nervk       31,841 bytes         31,472 bytes            369 bytes / 1.16%
+VOIDRUNNER  33,934 bytes         33,543 bytes            391 bytes / 1.15%
+```
+
+Use `OUT` only when you want to override the default beside-source output path:
 
 ```bash
-rm -rf /tmp/copt-gcc9-build
-mkdir -p /tmp/copt-gcc9-build
-OUT=/tmp/copt-gcc9-build/VOIDRUNNER ./build_gcc9_bullseye.sh examples/VOIDRUNNER.c
+OUT=release/nervk ./build_gcc9_bullseye.sh examples/nervk.c
 ```
 
-The first run builds a local `localhost/c-optimizer-gcc9:bullseye` image; later runs reuse it. See [Toolchains](TOOLCHAINS.md) for more detail and compiler comparisons.
+See [Toolchains](TOOLCHAINS.md) for more detail and compiler comparisons.
 
 ## Runtime Smoke
 
@@ -88,8 +84,8 @@ The packed files are interactive SDL/OpenGL programs. A useful runtime smoke nee
 If you have Xvfb available, try:
 
 ```bash
-LIBGL_ALWAYS_SOFTWARE=1 timeout 10s xvfb-run -a /tmp/copt-real-examples/VOIDRUNNER --seed 1
-LIBGL_ALWAYS_SOFTWARE=1 timeout 10s xvfb-run -a /tmp/copt-real-examples/nervk --seed 1
+LIBGL_ALWAYS_SOFTWARE=1 timeout 10s xvfb-run -a examples/voidrunner --seed 1
+LIBGL_ALWAYS_SOFTWARE=1 timeout 10s xvfb-run -a examples/nervk --seed 1
 ```
 
 Without Xvfb, `SDL_VIDEODRIVER=dummy` is only a runner sanity check. These examples may reach display setup and then fail or wait because they need an OpenGL-capable video backend.

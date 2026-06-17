@@ -3,23 +3,37 @@
 ## Build From The Terminal
 
 ```bash
-./run_c_optimizer.sh /absolute/or/relative/path/to/file.c
+./build_gcc9_bullseye.sh nervk.c
 ```
 
-The runnable is written beside the source file using a safe lowercase version of the source basename.
+The runnable is written beside the source file using a safe lowercase version of the source basename. For `nervk.c`, the output is `./nervk`.
+
+The GCC 9 wrapper is the recommended release path when byte count matters. It builds inside a local Podman image and reuses that image after the first run.
+
+For a host-compiler build, use:
+
+```bash
+./build_asm_syscall.sh nervk.c
+```
+
+For a GUI picker, use:
+
+```bash
+./run_c_optimizer.sh
+```
 
 Examples:
 
 ```text
-hello.c      -> hello
+nervk.c      -> nervk
 VOIDRUNNER.c -> voidrunner
 my demo.c    -> my-demo
 ```
 
-To keep generated output elsewhere, call the lower-level builder with `OUT`:
+To keep generated output somewhere else, set `OUT`:
 
 ```bash
-OUT=/tmp/VOIDRUNNER ./build_asm_syscall.sh examples/VOIDRUNNER.c
+OUT=release/nervk ./build_gcc9_bullseye.sh nervk.c
 ```
 
 ## Use The File Picker
@@ -67,7 +81,7 @@ Useful environment variables:
 Example:
 
 ```bash
-OUT=/tmp/tiny-demo ./build_asm_syscall.sh examples/hello.c
+./build_asm_syscall.sh nervk.c
 ```
 
 ## GCC 9 Bullseye Toolchain
@@ -75,10 +89,16 @@ OUT=/tmp/tiny-demo ./build_asm_syscall.sh examples/hello.c
 For size-sensitive release builds, use the bundled Podman wrapper:
 
 ```bash
-OUT=/tmp/VOIDRUNNER-gcc9 ./build_gcc9_bullseye.sh examples/VOIDRUNNER.c
+./build_gcc9_bullseye.sh nervk.c
 ```
 
-The first run builds a local `localhost/c-optimizer-gcc9:bullseye` image from `toolchains/gcc9-bullseye/Containerfile`. Later runs reuse that image. The wrapper sets the compatibility flags needed by Debian Bullseye's GCC 9 toolchain.
+From this checkout, the included nervk source is under `examples/`:
+
+```bash
+./build_gcc9_bullseye.sh examples/nervk.c
+```
+
+The first run builds a local `localhost/c-optimizer-gcc9:bullseye` image from `toolchains/gcc9-bullseye/Containerfile`. Later runs reuse that image. The wrapper sets the compatibility flags needed by Debian Bullseye's GCC 9 toolchain and writes the runner beside the source unless `OUT` is set.
 
 See [Toolchains](TOOLCHAINS.md) for the tested compiler-size table.
 

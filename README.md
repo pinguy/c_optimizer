@@ -36,17 +36,30 @@ The `examples/` directory includes real single-file sources from that lineage:
 
 - `examples/VOIDRUNNER.c`
 - `examples/nervk.c`
-- `examples/hello.c`
 
 ## Quick Start
 
-CLI:
+For a release-style build, pass the C file directly. The runnable is written beside the source file:
 
 ```bash
-./run_c_optimizer.sh /path/to/project.c
+./build_gcc9_bullseye.sh nervk.c
 ```
 
-GUI picker:
+That writes:
+
+```text
+./nervk
+```
+
+The GCC 9 wrapper uses a local Podman image so byte-chasing builds are more repeatable across hosts. The first run builds `localhost/c-optimizer-gcc9:bullseye`; later runs reuse it.
+
+For the default host compiler instead:
+
+```bash
+./build_asm_syscall.sh nervk.c
+```
+
+For a GUI file picker:
 
 ```bash
 ./run_c_optimizer.sh
@@ -97,25 +110,37 @@ The output is an executable shell stub with compressed ELF payload appended. Run
 ## Try The Example
 
 ```bash
-./run_c_optimizer.sh examples/hello.c
-./examples/hello
+./build_gcc9_bullseye.sh examples/nervk.c
 ```
 
-Build the real examples without writing generated runners into the repo:
+That writes `examples/nervk`. Generated example runners are ignored by git.
+
+Build both real examples:
 
 ```bash
-mkdir -p /tmp/copt-examples
-OUT=/tmp/copt-examples/VOIDRUNNER ./build_asm_syscall.sh examples/VOIDRUNNER.c
-OUT=/tmp/copt-examples/nervk ./build_asm_syscall.sh examples/nervk.c
+./build_gcc9_bullseye.sh examples/nervk.c
+./build_gcc9_bullseye.sh examples/VOIDRUNNER.c
 ```
 
-For byte-chasing builds, the repo also includes a Podman-backed Debian GCC 9 toolchain wrapper:
+To send output somewhere else, set `OUT`:
 
 ```bash
-OUT=/tmp/copt-examples/VOIDRUNNER-gcc9 ./build_gcc9_bullseye.sh examples/VOIDRUNNER.c
+OUT=release/nervk ./build_gcc9_bullseye.sh examples/nervk.c
 ```
 
-The first run builds a local `localhost/c-optimizer-gcc9:bullseye` image from `toolchains/gcc9-bullseye/Containerfile`.
+## Why GCC 9?
+
+Tiny packed C releases are sensitive to compiler version. The raw stripped ELF can be similar across GCC versions, while the final shell runner changes because x86 BCJ and LZMA compress different instruction layouts differently.
+
+On the current reference machine:
+
+```text
+Source      Host GCC 16 runner   GCC 9 Bullseye runner   Saved
+nervk       31,841 bytes         31,472 bytes            369 bytes / 1.16%
+VOIDRUNNER  33,934 bytes         33,543 bytes            391 bytes / 1.15%
+```
+
+GCC 9 was the smallest tested toolchain for VOIDRUNNER and also made the included nervk example smaller. See [Toolchains](docs/TOOLCHAINS.md) for the compiler comparison table and wrapper details.
 
 ## Documentation
 

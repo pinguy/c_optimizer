@@ -62,8 +62,10 @@ C Optimizer does not rewrite the source to do that automatically. It gives you t
 3. Run C Optimizer:
 
    ```bash
-   ./run_c_optimizer.sh path/to/production.c
+   ./build_gcc9_bullseye.sh path/to/production.c
    ```
+
+   The runner is written beside the source file. Use `./run_c_optimizer.sh path/to/production.c` instead if you want the host compiler or GUI picker path.
 
 4. Check the printed sizes:
 
@@ -78,7 +80,7 @@ C Optimizer does not rewrite the source to do that automatically. It gives you t
 6. Use `readelf -d` output to check dynamic dependencies.
 7. Iterate on the C source if the runner is too large or the dependency list is not what you expected.
 
-Compiler version matters for the final byte count. Different GCC releases can produce similarly sized raw ELFs that compress differently after x86 BCJ and LZMA. For the included VOIDRUNNER example, the bundled Debian Bullseye GCC 9 wrapper produced the smallest tested runner; see [Toolchains](TOOLCHAINS.md).
+Compiler version matters for the final byte count. Different GCC releases can produce similarly sized raw ELFs that compress differently after x86 BCJ and LZMA. For the included examples, the bundled Debian Bullseye GCC 9 wrapper saved about 1.15-1.16% versus the local GCC 16 build and produced the smallest tested VOIDRUNNER runner; see [Toolchains](TOOLCHAINS.md).
 
 For included real examples, see [Examples](EXAMPLES.md).
 
