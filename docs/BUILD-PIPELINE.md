@@ -73,9 +73,12 @@ At runtime it:
 4. Runs it with the original arguments.
 5. Exits with the wrapped program's exit code.
 
-## 6. Budget Report
+## 6. Size Report
 
-The builder prints the final runner size and reports whether it is under 32 KiB.
+The builder prints stripped ELF, section-stripped ELF, compressed payload, and final runner sizes.
 
-The 32 KiB target is a convenience budget for tiny demos. Larger outputs still run normally.
+Sizes use the best-fit IEC unit (`B`, `KiB`, `MiB`, etc.) and include exact byte and bit counts, for example:
 
+```text
+[build] runner:   31.1 KiB (31,841 bytes, 254,728 bits)
+```

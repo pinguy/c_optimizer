@@ -2,6 +2,38 @@
 set -eu
 HERE=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 
+format_size() {
+  awk -v bytes="$1" '
+    function commas(n, s, out) {
+      s = sprintf("%.0f", n)
+      while (length(s) > 3) {
+        out = "," substr(s, length(s) - 2) out
+        s = substr(s, 1, length(s) - 3)
+      }
+      return s out
+    }
+    BEGIN {
+      bits = bytes * 8
+      split("B KiB MiB GiB TiB", unit, " ")
+      value = bytes
+      idx = 1
+      while (value >= 1024 && idx < 5) {
+        value /= 1024
+        idx++
+      }
+      if (idx == 1) {
+        main = sprintf("%s B", commas(bytes))
+      } else if (value < 10) {
+        main = sprintf("%.2f %s", value, unit[idx])
+      } else if (value < 100) {
+        main = sprintf("%.1f %s", value, unit[idx])
+      } else {
+        main = sprintf("%.0f %s", value, unit[idx])
+      }
+      printf "%s (%s bytes, %s bits)\n", main, commas(bytes), commas(bits)
+    }'
+}
+
 if [ "$#" -gt 0 ]; then
   SRC=$1
 else
@@ -61,10 +93,10 @@ printf '[build] output:   %s\n' "$OUT"
 gcc -c -Os -fno-asynchronous-unwind-tables -fno-unwind-tables -fno-ident "$HERE/start_syscall.S" -o "$START_OBJ"
 gcc $CFLAGS $SDL_CFLAGS "$SRC_ABS" "$START_OBJ" -o "$RAW" $LDFLAGS
 strip -s "$RAW"
-printf '[build] strip:    %s bytes\n' "$(stat -c%s "$RAW")"
+printf '[build] strip:    %s\n' "$(format_size "$(stat -c%s "$RAW")")"
 cp "$RAW" "$SST"
 if command -v sstrip >/dev/null 2>&1; then sstrip "$SST"; else python3 "$HERE/tiny_tools/sstrip64.py" "$SST"; fi
-printf '[build] sstrip:   %s bytes\n' "$(stat -c%s "$SST")"
+printf '[build] sstrip:   %s\n' "$(format_size "$(stat -c%s "$SST")")"
 best=; best_sz=999999999; best_lc=0; best_pb=0; best_dict=96KiB
 for lc in 0 1 2 3 4; do
   for pb in 0 1 2; do
@@ -83,7 +115,7 @@ done
 [ -n "$best" ] || { echo '[build] ERROR: BCJ pack failed' >&2; exit 1; }
 mv "$best" "$SST.bcj"
 rm -f "$SST".bcj.lc*.pb*.d* 2>/dev/null || true
-printf '[build] bcj/lzma:%s bytes (raw x86+lzma lc=%s pb=%s dict=%s)\n' "$(stat -c%s "$SST.bcj")" "$best_lc" "$best_pb" "$best_dict"
+printf '[build] bcj/lzma:%s (raw x86+lzma lc=%s pb=%s dict=%s)\n' "$(format_size "$(stat -c%s "$SST.bcj")")" "$best_lc" "$best_pb" "$best_dict"
 cat > "$RUNNER_TMP" <<STUB
 #!/bin/sh
 a=/tmp/v\$\$;trap 'rm -f "\$a"' 0;tail -n+3 "\$0"|xz -Fraw --x86 --lzma1=lc=$best_lc,pb=$best_pb,dict=$best_dict -d>"\$a";chmod +x "\$a";"\$a" "\$@";r=\$?;exit "\$r"
@@ -92,7 +124,6 @@ cat "$SST.bcj" >> "$RUNNER_TMP"
 mv "$RUNNER_TMP" "$OUT"
 chmod +x "$OUT"
 sz=$(stat -c%s "$OUT")
-printf '[build] runner:   %s bytes\n' "$sz"
-if [ "$sz" -lt 32768 ]; then printf '[build] budget:   UNDER 32 KiB (%s bytes headroom)\n' "$((32768-sz))"; else printf '[build] budget:   OVER 32 KiB by %s bytes\n' "$((sz-32768))"; fi
+printf '[build] runner:   %s\n' "$(format_size "$sz")"
 printf '[build] DT_NEEDED:\n'
 readelf -d "$RAW" | grep NEEDED || true

@@ -45,11 +45,11 @@ The headers in `compat/SDL2/` are compatibility stubs for tiny single-file build
 
 If your source needs more SDL definitions, either add them to the compatibility headers or install/use the real SDL2 development headers and adjust the include/link approach.
 
-## Output Is Over 32 KiB
+## Output Is Larger Than Expected
 
 That is allowed. The runner still works.
 
-Try reducing source size, assets, strings, static data, or library references if the 32 KiB target matters.
+The builder reports the final runner using the best-fit IEC unit and exact byte/bit counts. Try reducing source size, assets, strings, static data, or library references if the output needs to be smaller.
 
 ## Temporary Files
 
@@ -60,4 +60,3 @@ To inspect intermediates:
 ```bash
 WORKDIR=/tmp/copt-debug ./build_asm_syscall.sh /path/to/file.c
 ```
-

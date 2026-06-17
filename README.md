@@ -12,7 +12,7 @@ It was built for small demo/game-style C projects where the whole project lives 
 - Strips and section-strips the ELF.
 - Searches several x86 BCJ + raw LZMA settings.
 - Emits a self-extracting runnable beside the source file.
-- Reports whether the final runner is under 32 KiB.
+- Reports output sizes using the best-fit IEC unit plus exact bytes and bits.
 
 The original `.c` file is left untouched.
 
