@@ -30,7 +30,7 @@ C Optimizer is aimed at projects with constraints like:
 Reference-style projects:
 
 - [VOIDRUNNER](https://github.com/pinguy/VOIDRUNNER) - a native Linux procedural space-trader / combat game released as a 32 KiB-class runnable.
-- [nervk / murkk](https://github.com/pinguy/murkk) - a 96K-spirit native Linux procedural game lineage with runtime-synthesized visuals, level, audio, and font data.
+- [nervk](https://github.com/pinguy/murkk/releases/tag/nervk) - a 96K-spirit native Linux procedural game lineage with runtime-synthesized visuals, level, audio, and font data.
 
 The `examples/` directory includes real single-file sources from that lineage:
 
