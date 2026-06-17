@@ -87,7 +87,9 @@ The output is an executable shell stub with compressed ELF payload appended. Run
 
 ## License
 
-No open-source license has been selected yet. Until one is added, normal copyright restrictions apply.
+C Optimizer is licensed under the [Apache License, Version 2.0](LICENSE).
+
+Generated runners are output artifacts from your own C source. C Optimizer does not impose Apache-2.0 on the programs you build with it.
 
 ## Notes
 

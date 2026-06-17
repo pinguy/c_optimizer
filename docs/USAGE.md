@@ -81,3 +81,4 @@ That means a selected file can include local headers next to itself, and can als
 
 Generated runners are output beside selected source files. They are not intended to be committed unless you explicitly want to publish a built artifact.
 
+The C Optimizer tool itself is Apache-2.0 licensed. Generated runners follow the license/ownership of the C source they were built from.
