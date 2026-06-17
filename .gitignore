@@ -1,0 +1,21 @@
+# Local selected projects / generated runners
+/nervk
+/nervk.c
+/C Optimizer.desktop
+
+# Build intermediates
+*.o
+*.raw
+*.sstrip
+*.sstrip.*
+*.bcj
+
+# Logs and temporary files
+*.log
+*.tmp
+*~
+
+# Editor noise
+.DS_Store
+.kate-swp
+*.swp
