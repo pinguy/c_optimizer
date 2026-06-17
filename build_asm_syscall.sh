@@ -84,15 +84,27 @@ SST=${SST:-"$WORKDIR/${safe_name}_raw.sstrip"}
 START_OBJ="$WORKDIR/start_asm.o"
 RUNNER_TMP="$WORKDIR/runner"
 
-CFLAGS="-Oz -Wall -flto -fwhole-program -fno-plt -fno-pie -no-pie -fno-toplevel-reorder -fno-reorder-functions -fno-schedule-insns -fno-schedule-insns2 -fno-ipa-cp -fno-ipa-sra -fno-tree-sra -fno-expensive-optimizations -fno-asynchronous-unwind-tables -fno-unwind-tables -ffunction-sections -fdata-sections -fno-stack-protector -fomit-frame-pointer -fmerge-all-constants -fno-math-errno -fno-ident -fno-lto -fno-inline -fno-jump-tables -fno-code-hoisting -fno-tree-dominator-opts -fno-tree-fre -fno-tree-sink -fno-tree-slsr -fno-tree-forwprop"
-LDFLAGS="-fno-lto -no-pie -nostartfiles -Wl,-e,_start -Wl,--gc-sections -Wl,--build-id=none -Wl,-z,norelro -Wl,-z,noseparate-code -Wl,--as-needed -Wl,--hash-style=sysv"
+CC=${CC:-gcc}
+STRIP=${STRIP:-strip}
+READELF=${READELF:-readelf}
+COPT_OPT=${COPT_OPT:--Oz}
+case "$COPT_OPT" in
+  -*) ;;
+  *) COPT_OPT="-$COPT_OPT" ;;
+esac
+DEFAULT_CFLAGS="$COPT_OPT -Wall -flto -fwhole-program -fno-plt -fno-pie -no-pie -fno-toplevel-reorder -fno-reorder-functions -fno-schedule-insns -fno-schedule-insns2 -fno-ipa-cp -fno-ipa-sra -fno-tree-sra -fno-expensive-optimizations -fno-asynchronous-unwind-tables -fno-unwind-tables -ffunction-sections -fdata-sections -fno-stack-protector -fomit-frame-pointer -fmerge-all-constants -fno-math-errno -fno-ident -fno-lto -fno-inline -fno-jump-tables -fno-code-hoisting -fno-tree-dominator-opts -fno-tree-fre -fno-tree-sink -fno-tree-slsr -fno-tree-forwprop"
+DEFAULT_LDFLAGS="-fno-lto -no-pie -nostartfiles -Wl,-e,_start -Wl,--gc-sections -Wl,--build-id=none -Wl,-z,norelro -Wl,-z,noseparate-code -Wl,--as-needed -Wl,--hash-style=sysv"
+CFLAGS=${COPT_CFLAGS:-$DEFAULT_CFLAGS}
+LDFLAGS=${COPT_LDFLAGS:-$DEFAULT_LDFLAGS}
+COPT_EXTRA_LDLIBS=${COPT_EXTRA_LDLIBS:-}
 SDL_CFLAGS="-I$SRC_DIR -I$HERE/compat"
 printf '[build] start:    syscall _start\n'
+printf '[build] cc:       %s\n' "$CC"
 printf '[build] source:   %s\n' "$SRC_ABS"
 printf '[build] output:   %s\n' "$OUT"
-gcc -c -Os -fno-asynchronous-unwind-tables -fno-unwind-tables -fno-ident "$HERE/start_syscall.S" -o "$START_OBJ"
-gcc $CFLAGS $SDL_CFLAGS "$SRC_ABS" "$START_OBJ" -o "$RAW" $LDFLAGS
-strip -s "$RAW"
+$CC -c -Os -fno-asynchronous-unwind-tables -fno-unwind-tables -fno-ident "$HERE/start_syscall.S" -o "$START_OBJ"
+$CC $CFLAGS $SDL_CFLAGS "$SRC_ABS" "$START_OBJ" -o "$RAW" $LDFLAGS $COPT_EXTRA_LDLIBS
+$STRIP -s "$RAW"
 printf '[build] strip:    %s\n' "$(format_size "$(stat -c%s "$RAW")")"
 cp "$RAW" "$SST"
 if command -v sstrip >/dev/null 2>&1; then sstrip "$SST"; else python3 "$HERE/tiny_tools/sstrip64.py" "$SST"; fi
@@ -126,4 +138,4 @@ chmod +x "$OUT"
 sz=$(stat -c%s "$OUT")
 printf '[build] runner:   %s\n' "$(format_size "$sz")"
 printf '[build] DT_NEEDED:\n'
-readelf -d "$RAW" | grep NEEDED || true
+$READELF -d "$RAW" | grep NEEDED || true

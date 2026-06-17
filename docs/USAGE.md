@@ -60,12 +60,27 @@ Useful environment variables:
 - `WORKDIR=/path/to/workdir` keeps intermediates in a chosen directory.
 - `RAW=/path/to/raw-elf` overrides the raw linked ELF path.
 - `SST=/path/to/stripped-elf` overrides the section-stripped ELF path.
+- `CC=/path/to/gcc` chooses the C compiler.
+- `COPT_OPT=-Os` overrides the default optimization level (`-Oz`).
+- `COPT_EXTRA_LDLIBS=-ldl` appends linker libraries after the normal linker flags.
 
 Example:
 
 ```bash
 OUT=/tmp/tiny-demo ./build_asm_syscall.sh examples/hello.c
 ```
+
+## GCC 9 Bullseye Toolchain
+
+For size-sensitive release builds, use the bundled Podman wrapper:
+
+```bash
+OUT=/tmp/VOIDRUNNER-gcc9 ./build_gcc9_bullseye.sh examples/VOIDRUNNER.c
+```
+
+The first run builds a local `localhost/c-optimizer-gcc9:bullseye` image from `toolchains/gcc9-bullseye/Containerfile`. Later runs reuse that image. The wrapper sets the compatibility flags needed by Debian Bullseye's GCC 9 toolchain.
+
+See [Toolchains](TOOLCHAINS.md) for the tested compiler-size table.
 
 ## Source Layout Assumptions
 

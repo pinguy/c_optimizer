@@ -109,11 +109,20 @@ OUT=/tmp/copt-examples/VOIDRUNNER ./build_asm_syscall.sh examples/VOIDRUNNER.c
 OUT=/tmp/copt-examples/nervk ./build_asm_syscall.sh examples/nervk.c
 ```
 
+For byte-chasing builds, the repo also includes a Podman-backed Debian GCC 9 toolchain wrapper:
+
+```bash
+OUT=/tmp/copt-examples/VOIDRUNNER-gcc9 ./build_gcc9_bullseye.sh examples/VOIDRUNNER.c
+```
+
+The first run builds a local `localhost/c-optimizer-gcc9:bullseye` image from `toolchains/gcc9-bullseye/Containerfile`.
+
 ## Documentation
 
 - [Usage](docs/USAGE.md)
 - [Demoscene Workflow](docs/DEMOSCENE-WORKFLOW.md)
 - [Examples](docs/EXAMPLES.md)
+- [Toolchains](docs/TOOLCHAINS.md)
 - [Build Pipeline](docs/BUILD-PIPELINE.md)
 - [Troubleshooting](docs/TROUBLESHOOTING.md)
 
