@@ -83,6 +83,7 @@ RAW=${RAW:-"$WORKDIR/${safe_name}_raw.raw"}
 SST=${SST:-"$WORKDIR/${safe_name}_raw.sstrip"}
 START_OBJ="$WORKDIR/start_asm.o"
 RUNNER_TMP="$WORKDIR/runner"
+SRC_BUILD="$SRC_ABS"
 
 CC=${CC:-gcc}
 STRIP=${STRIP:-strip}
@@ -102,8 +103,16 @@ printf '[build] start:    syscall _start\n'
 printf '[build] cc:       %s\n' "$CC"
 printf '[build] source:   %s\n' "$SRC_ABS"
 printf '[build] output:   %s\n' "$OUT"
+if [ "${COPT_SOURCE_PREPASS:-1}" != 0 ]; then
+  SRC_OPT="$WORKDIR/$SRC_FILE"
+  prepass=$(python3 "$HERE/tiny_tools/source_prepass.py" "$SRC_ABS" "$SRC_OPT")
+  if [ "$prepass" != none ]; then
+    SRC_BUILD="$SRC_OPT"
+    printf '[build] prepass: %s\n' "$prepass"
+  fi
+fi
 $CC -c -Os -fno-asynchronous-unwind-tables -fno-unwind-tables -fno-ident "$HERE/start_syscall.S" -o "$START_OBJ"
-$CC $CFLAGS $SDL_CFLAGS "$SRC_ABS" "$START_OBJ" -o "$RAW" $LDFLAGS $COPT_EXTRA_LDLIBS
+$CC $CFLAGS $SDL_CFLAGS "$SRC_BUILD" "$START_OBJ" -o "$RAW" $LDFLAGS $COPT_EXTRA_LDLIBS
 $STRIP -s "$RAW"
 printf '[build] strip:    %s\n' "$(format_size "$(stat -c%s "$RAW")")"
 cp "$RAW" "$SST"

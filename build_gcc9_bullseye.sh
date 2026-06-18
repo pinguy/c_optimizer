@@ -51,6 +51,7 @@ printf '[gcc9] source:   %s\n' "$SRC_ABS"
 printf '[gcc9] output:   %s\n' "$OUT_HOST"
 
 podman run --rm --pull=never --userns=keep-id \
+  -e COPT_SOURCE_PREPASS="${COPT_SOURCE_PREPASS:-1}" \
   -v "$HERE:/c_optimizer:ro" \
   -v "$SRC_DIR:/input:ro" \
   -v "$OUT_DIR:/output" \

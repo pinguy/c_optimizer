@@ -18,9 +18,21 @@
 #include <SDL2/SDL_opengl.h>
 #include <dlfcn.h>
 #include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stddef.h>
+
+void* memset(void*d,int c,size_t n){ unsigned char*p=d; while(n--)*p++=(unsigned char)c; return d; }
+void* memcpy(void*d,const void*s,size_t n){ unsigned char*a=d; const unsigned char*b=s; while(n--)*a++=*b++; return d; }
+
+typedef int(*snprintf_t)(char*,size_t,const char*,...);
+typedef unsigned long(*strtoul_t)(const char*,char**,int);
+static snprintf_t p_snprintf; static strtoul_t p_strtoul;
+static void load_c(void){
+  void*h=dlopen("libc.so.6",1);
+  p_snprintf=(snprintf_t)dlsym(h,"snprintf");
+  p_strtoul=(strtoul_t)dlsym(h,"strtoul");
+}
+#define snprintf p_snprintf
+#define strtoul p_strtoul
 
 /* -------------------------------------------------------------- libm loader
  * Same trick for the handful of libm calls so the binary only NEEDEDs libc. */
@@ -260,6 +272,8 @@ static int curBiome=0;
 static int surfBiome[3]={0,0,0};
 static int mixTiles=0;
 #define TS 256
+static float texH[TS*TS];
+static unsigned char texA[TS*TS*4], texN[TS*TS*4];
 
 static GLuint mktex(unsigned char*px){
   GLuint t; glGenTextures(1,&t); glBindTexture(GL_TEXTURE_2D,t);
@@ -291,8 +305,8 @@ static void putrgb(unsigned char*p,float r,float g,float b){
 }
 
 static void gen_textures(int bm){
-  float *hh=malloc(TS*TS*sizeof(float));
-  unsigned char *alb=malloc(TS*TS*4), *nrm=malloc(TS*TS*4);
+  float *hh=texH;
+  unsigned char *alb=texA, *nrm=texN;
   unsigned bs=bm*0x51ed270bu;   /* per-biome noise offset */
 
   if(bm==2){
@@ -342,7 +356,6 @@ static void gen_textures(int bm){
     }
     h2n(hh,nrm,3.4f);
     texAlb[bm][TX_CEIL]=mktex(alb); texNrm[bm][TX_CEIL]=mktex(nrm);
-    free(hh); free(alb); free(nrm);
     return;
   }
 
@@ -466,13 +479,11 @@ static void gen_textures(int bm){
   }
   h2n(hh,nrm,bm?2.9f:2.6f);
   texAlb[bm][TX_CEIL]=mktex(alb); texNrm[bm][TX_CEIL]=mktex(nrm);
-
-  free(hh); free(alb); free(nrm);
 }
 
 /* radial glow sprite — biome-independent, generated once */
 static void gen_glow(void){
-  unsigned char *alb=malloc(TS*TS*4);
+  unsigned char *alb=texA;
   for(int y=0;y<TS;y++)for(int x=0;x<TS;x++){
     float dx=(x-128)/128.0f, dy=(y-128)/128.0f;
     float r=sqrtf(dx*dx+dy*dy);
@@ -481,7 +492,6 @@ static void gen_glow(void){
     p[0]=p[1]=p[2]=(unsigned char)(a*255); p[3]=(unsigned char)(a*255);
   }
   texGlow=mktex(alb);
-  free(alb);
 }
 
 /* ---------------------------------------------------------------- 5x7 bitfont
@@ -573,9 +583,11 @@ typedef struct { float x,y,z,vx,vy,vz,life; int type,owner,live; } Proj;
 static Proj proj[MAXPROJ];
 
 /* level mesh batches: 0 walls 1 floor 2 ceil; interleaved p3 n3 uv2 */
-static float *batch[3]; static int bn[3], bcap[3];
+#define BCAP 65536
+static float batch_store[3][BCAP], *batch[3]={batch_store[0],batch_store[1],batch_store[2]};
+static int bn[3];
 static void emit_v(int b,float px,float py,float pz,float nx,float ny,float nz){
-  if(bn[b]+8>bcap[b]){ bcap[b]=bcap[b]?bcap[b]*2:4096; batch[b]=realloc(batch[b],bcap[b]*sizeof(float)); }
+  if(bn[b]+8>BCAP)return;
   /* tangent/bitangent from axis-aligned normal — must match shader */
   float tx,ty,tz,bx,by,bz;
   if(fabsf(ny)>0.5f){ tx=1;ty=0;tz=0; } else { tx=nz;ty=0;tz=-nx; } /* cross((0,1,0),N) */
@@ -2113,6 +2125,7 @@ static void draw_hud(void){
 /* ---------------------------------------------------------------- main */
 int main(int argc,char**argv){
   int seedSet=0;
+  load_c();
   for(int i=1;i<argc;i++){
     if(argv[i][2]=='s'&&i+1<argc){gseed=(unsigned)strtoul(argv[++i],0,0); seedSet=1;}
     else if(argv[i][2]=='f'&&i+1<argc){startLev=(int)strtoul(argv[++i],0,0);if(startLev<1)startLev=1;}
