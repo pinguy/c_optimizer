@@ -107,6 +107,8 @@ C Optimizer writes:
 
 The output is an executable shell stub with compressed ELF payload appended. Running it extracts the payload to `/tmp`, runs it, and exits with the wrapped program's exit status.
 
+That shell runner is a sizecoding trade-off, not a hardened installer. It keeps the release artifact tiny, but it writes a predictable PID-based temporary path and needs an executable `/tmp`; hardened systems with `noexec` temporary directories can reject it. A `memfd_create`/`fexecve` loader would avoid disk extraction and noexec problems, but it would cost more stub bytes.
+
 ## Try The Example
 
 ```bash

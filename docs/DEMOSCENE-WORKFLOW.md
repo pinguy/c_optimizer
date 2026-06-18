@@ -91,3 +91,5 @@ The output file is a shell stub plus compressed native ELF payload.
 At runtime it extracts to `/tmp`, marks the payload executable, runs it with the original arguments, then exits with the payload's exit code.
 
 That makes it convenient for demoscene-style release artefacts: one runnable file, no asset directory, no install step.
+
+It is deliberately not a hardened deployment format. The shell stub uses a predictable `/tmp` path and will fail on systems where `/tmp` is mounted `noexec`. A `memfd_create`/`fexecve` loader would avoid those problems, but the shell stub is smaller, which is why this project currently uses it.
