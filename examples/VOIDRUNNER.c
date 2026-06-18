@@ -2,6 +2,8 @@
  *  VOIDRUNNER  --  a galaxy small enough to fit in a rounding error,
  *                  but alive enough to rob you blind.
  *  codename: STARCUNT
+ *  Copyright 2026 Antoni Norman.
+ *  Licensed under the Apache License, Version 2.0; see examples/LICENSE.
  *
  *  Native Linux procedural space-trading / combat sim, built under the same
  *  demoscene constraint philosophy as .murkk:

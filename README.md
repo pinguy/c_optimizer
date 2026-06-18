@@ -157,6 +157,8 @@ GCC 9 was the smallest tested toolchain for VOIDRUNNER and also made the include
 
 C Optimizer is licensed under the [MIT License](LICENSE).
 
+The published example game sources under `examples/` are licensed under the [Apache License, Version 2.0](examples/LICENSE) and include attribution notes in [examples/NOTICE](examples/NOTICE).
+
 Generated runners are output artifacts from your own C source. C Optimizer does not impose the MIT License on the programs you build with it.
 
 ## Notes

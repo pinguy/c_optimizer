@@ -9,7 +9,9 @@
  *   - trades RAM and startup time for bytes, exactly like the original
  *
  * build: gcc -Os nervk.c -o nervk -lSDL2 -lGL -lm   (see build.sh for flags)
- * license: CC0 / public domain. greets to farbrausch & .theprodukkt.
+ * Copyright 2026 Antoni Norman.
+ * Licensed under the Apache License, Version 2.0; see examples/LICENSE.
+ * greets to farbrausch & .theprodukkt.
  * ==========================================================================*/
 
 #include <SDL2/SDL.h>

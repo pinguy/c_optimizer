@@ -128,6 +128,10 @@ For tiny SDL/OpenGL productions, the smallest release source often uses `dlopen`
 
 Generated runners are output beside selected source files. They are not intended to be committed unless you explicitly want to publish a built artifact.
 
-The C Optimizer tool itself is MIT-licensed. Generated runners follow the license/ownership of the C source they were built from.
+The C Optimizer tool itself is MIT-licensed.
+
+The published example game sources under `examples/` are Apache-2.0 licensed. Keep their copyright, license, and notice files with forks/remixes.
+
+Generated runners follow the license/ownership of the C source they were built from.
 
 The checked-in real examples keep their own upstream/source licensing context; use them as build references and learning material.
