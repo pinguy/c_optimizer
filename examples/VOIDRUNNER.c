@@ -226,7 +226,6 @@ static void* gl_lib; static void* sdl_lib;
 #define SC_3 32
 #define SC_4 33
 #define SC_5 34
-#define SC_6 35
 #define SC_7 36
 #define SC_8 37
 #define SC_9 38
@@ -234,8 +233,6 @@ static void* gl_lib; static void* sdl_lib;
 #define SC_RETURN 40
 #define SC_ESC 41
 #define SC_BACKSPACE 42
-#define SC_TAB 43
-#define SC_SPACE 44
 #define SC_F11 68
 #define SC_RIGHT 79
 #define SC_LEFT 80
@@ -262,31 +259,31 @@ static void face4(V3 a,V3 b,V3 c,V3 d){ face3(a,b,c); face3(a,c,d); }
 /* Clean generated 5x7 bitmap font. No assets, just tiny packed rows.          */
 typedef struct { char c; u8 r[7]; } BGlyph;
 static const BGlyph BFONT[]={
- {'A',{14,17,17,31,17,17,17}}, {'B',{30,17,17,30,17,17,30}},
- {'C',{14,17,16,16,16,17,14}}, {'D',{30,17,17,17,17,17,30}},
- {'E',{31,16,16,30,16,16,31}}, {'F',{31,16,16,30,16,16,16}},
- {'G',{14,17,16,23,17,17,15}}, {'H',{17,17,17,31,17,17,17}},
- {'I',{14,4,4,4,4,4,14}},    {'J',{7,2,2,2,18,18,12}},
- {'K',{17,18,20,24,20,18,17}}, {'L',{16,16,16,16,16,16,31}},
- {'M',{17,27,21,21,17,17,17}}, {'N',{17,25,21,19,17,17,17}},
- {'O',{14,17,17,17,17,17,14}}, {'P',{30,17,17,30,16,16,16}},
- {'Q',{14,17,17,17,21,18,13}}, {'R',{30,17,17,30,20,18,17}},
- {'S',{15,16,16,14,1,1,30}},  {'T',{31,4,4,4,4,4,4}},
- {'U',{17,17,17,17,17,17,14}}, {'V',{17,17,17,17,10,10,4}},
- {'W',{17,17,17,21,21,21,10}}, {'X',{17,17,10,4,10,17,17}},
- {'Y',{17,17,10,4,4,4,4}},    {'Z',{31,1,2,4,8,16,31}},
- {'0',{14,17,19,21,25,17,14}}, {'1',{4,12,4,4,4,4,14}},
- {'2',{14,17,1,2,4,8,31}},    {'3',{30,1,1,14,1,1,30}},
- {'4',{2,6,10,18,31,2,2}},    {'5',{31,16,16,30,1,1,30}},
- {'6',{14,16,16,30,17,17,14}}, {'7',{31,1,2,4,8,8,8}},
- {'8',{14,17,17,14,17,17,14}}, {'9',{14,17,17,15,1,1,14}},
- {'.',{0,0,0,0,0,12,12}},     {',',{0,0,0,0,0,12,4}},
- {'-',{0,0,0,31,0,0,0}},      {'_',{0,0,0,0,0,0,31}},
- {'/',{1,1,2,4,8,16,16}},     {':',{0,12,12,0,12,12,0}},
- {'%',{24,25,2,4,8,19,3}},    {'+',{0,4,4,31,4,4,0}},
- {'>',{16,8,4,2,4,8,16}},     {'<',{1,2,4,8,4,2,1}},
- {'=',{0,0,31,0,31,0,0}},     {'?',{14,17,1,2,4,0,4}},
- {'(',{2,4,8,8,8,4,2}},       {')',{8,4,2,2,2,4,8}},
+    {'A',{14,17,17,31,17,17,17}}, {'B',{30,17,17,30,17,17,30}},
+    {'C',{14,17,16,16,16,17,14}}, {'D',{30,17,17,17,17,17,30}},
+    {'E',{31,16,16,30,16,16,31}}, {'F',{31,16,16,30,16,16,16}},
+    {'G',{14,17,16,23,17,17,15}}, {'H',{17,17,17,31,17,17,17}},
+    {'I',{14,4,4,4,4,4,14}},    {'J',{7,2,2,2,18,18,12}},
+    {'K',{17,18,20,24,20,18,17}}, {'L',{16,16,16,16,16,16,31}},
+    {'M',{17,27,21,21,17,17,17}}, {'N',{17,25,21,19,17,17,17}},
+    {'O',{14,17,17,17,17,17,14}}, {'P',{30,17,17,30,16,16,16}},
+    {'Q',{14,17,17,17,21,18,13}}, {'R',{30,17,17,30,20,18,17}},
+    {'S',{15,16,16,14,1,1,30}},  {'T',{31,4,4,4,4,4,4}},
+    {'U',{17,17,17,17,17,17,14}}, {'V',{17,17,17,17,10,10,4}},
+    {'W',{17,17,17,21,21,21,10}}, {'X',{17,17,10,4,10,17,17}},
+    {'Y',{17,17,10,4,4,4,4}},    {'Z',{31,1,2,4,8,16,31}},
+    {'0',{14,17,19,21,25,17,14}}, {'1',{4,12,4,4,4,4,14}},
+    {'2',{14,17,1,2,4,8,31}},    {'3',{30,1,1,14,1,1,30}},
+    {'4',{2,6,10,18,31,2,2}},    {'5',{31,16,16,30,1,1,30}},
+    {'6',{14,16,16,30,17,17,14}}, {'7',{31,1,2,4,8,8,8}},
+    {'8',{14,17,17,14,17,17,14}}, {'9',{14,17,17,15,1,1,14}},
+    {'.',{0,0,0,0,0,12,12}},     {',',{0,0,0,0,0,12,4}},
+    {'-',{0,0,0,31,0,0,0}},      {'_',{0,0,0,0,0,0,31}},
+    {'/',{1,1,2,4,8,16,16}},     {':',{0,12,12,0,12,12,0}},
+    {'%',{24,25,2,4,8,19,3}},    {'+',{0,4,4,31,4,4,0}},
+    {'>',{16,8,4,2,4,8,16}},     {'<',{1,2,4,8,4,2,1}},
+    {'=',{0,0,31,0,31,0,0}},     {'?',{14,17,1,2,4,0,4}},
+    {'(',{2,4,8,8,8,4,2}},       {')',{8,4,2,2,2,4,8}},
 };
 static const BGlyph* bglyph(char c){
     if(c>='a'&&c<='z') c-=32;
@@ -342,13 +339,13 @@ static const char* COM[NCOM] = {"FOOD","ORE","MACHINERY","MEDICINE","NARCOTICS",
 static const i32   COMBASE[NCOM] = { 14, 22, 90, 110, 180, 240 };
 /* price multiplier x100 per economy per commodity (sells cheap where produced) */
 static const i32 PRICEMUL[ECO_N][NCOM] = {
-/*            FOOD  ORE  MACH  MED  NARC  WEAP */
-/* AGRI   */ { 60, 120, 130, 110, 140, 130 },
-/* IND    */ {130,  90,  60, 100, 130, 105 },
-/* MINE   */ {120,  55, 115, 130, 130, 120 },
-/* TECH   */ {115, 130,  90,  65, 120,  70 },
-/* REFINE */ {110,  70,  95, 115, 120, 110 },
-/* LAWLESS*/ {125, 110, 120, 120,  55,  60 },
+    /*            FOOD  ORE  MACH  MED  NARC  WEAP */
+    /* AGRI   */ { 60, 120, 130, 110, 140, 130 },
+    /* IND    */ {130,  90,  60, 100, 130, 105 },
+    /* MINE   */ {120,  55, 115, 130, 130, 120 },
+    /* TECH   */ {115, 130,  90,  65, 120,  70 },
+    /* REFINE */ {110,  70,  95, 115, 120, 110 },
+    /* LAWLESS*/ {125, 110, 120, 120,  55,  60 },
 };
 static const char* ECONAME[ECO_N]={"AGRICULTURAL","INDUSTRIAL","MINING","HIGH TECH","REFINERY","LAWLESS"};
 static const char* GOVNAME[GOV_N]={"ANARCHY","FEUDAL","CORPORATE","DEMOCRACY","CONFED"};
@@ -406,7 +403,7 @@ static void gen_galaxy(u32 master){
     }
 
     /* Starter pocket: the Elite-like 100CR opening only works if the first
-       local chart has affordable, readable trades. Keep this deterministic. */
+     *      local chart has affordable, readable trades. Keep this deterministic. */
     {
         System* a=&gal[0];
         a->seed=hash32(master^0x101); mkname(a->name,a->seed);
@@ -433,7 +430,7 @@ static void gen_galaxy(u32 master){
 
 
 /* Generated planet textures: still tiny, but now per-body so a system can have
-   several planets/moons without all sharing the same skin. */
+ *  several planets/moons without all sharing the same skin. */
 static void planet_base_rgb(int pt, f32* r, f32* g, f32* b){
     *r = pt==0?0.12f:pt==1?0.55f:pt==2?0.22f:pt==3?0.45f:0.48f;
     *g = pt==0?0.28f:pt==1?0.30f:pt==2?0.50f:pt==3?0.47f:0.30f;
@@ -496,10 +493,9 @@ static void ship_rgb(int t,f32* r,f32* g,f32* b){
     }
 }
 static void ship_color(int t){ f32 r,g,b; ship_rgb(t,&r,&g,&b); p_glColor3f(r*0.72f,g*0.72f,b*0.72f); }
-static int ship_threat_type(int t){ return t==SHIP_PIRATE || t==SHIP_ALIEN || t==SHIP_FIGHTER; }
 static void emit_ship(int t){
     /* Compact role templates. No fake seed-body variation: radar/tags carry identity,
-       these shapes stay cheap and readable at flight distances. */
+     *      these shapes stay cheap and readable at flight distances. */
     p_glBegin(GL_TRIANGLES);
     if(t==SHIP_FIGHTER || t==SHIP_PLAYER || t==SHIP_POLICE){
         V3 nose=v(0,0,2.4f), tl=v(-1.4f,-0.3f,-1.4f), tr=v(1.4f,-0.3f,-1.4f);
@@ -660,15 +656,24 @@ static void sfx_play(int type){
 }
 
 /* shared generator pool: weapons/boost use ENERGY but never directly drain shields.
-   ENERGY instead changes shield efficiency when a hit lands. */
+ *  ENERGY instead changes shield efficiency when a hit lands. */
 static f32 energy_frac(void){ return G.maxhull>0 ? clampf(G.hull/G.maxhull,0,1) : 0; }
 static void energy_spend_soft(f32 a){ G.hull-=a; if(G.hull<8.0f) G.hull=8.0f; }
 static int energy_try_spend(f32 a){ if(G.hull <= a+8.0f) return 0; G.hull-=a; return 1; }
 static f32 shield_hit_scale(void){ return 1.65f - 0.90f*energy_frac(); } /* full energy 0.75x, dry reactor 1.65x */
 static f32 laser_energy_cost(void){
-    f32 base = G.laser_level>=3 ? 4.3f : (G.laser_level==2 ? 2.8f : 1.45f);
+    f32 base = G.laser_level>=3 ? 4.2f : (G.laser_level==2 ? 2.7f : 1.35f);
     return base*(1.0f + G.laser_heat*1.55f);
 }
+
+/* ---- enemy gunnery tunables (aim-cone + graze model) ----------------------
+ *  These are the only dials. Behaviour rules (approach/orbit/flee) are untouched.
+ *    EFIRE_RANGE : enemies open fire inside this range (unchanged from old gate)
+ *    ETRACK      : seconds of tracking lag -> bigger = a fast crosser spoils aim
+ *    PLAYER_R    : player hull radius the shot has to graze to count as a hit  */
+#define EFIRE_RANGE 800.0f
+#define ETRACK      0.12f
+#define PLAYER_R    15.0f
 
 /* spawn the local scene from a system seed */
 static V3 body_draw_pos(int i){
@@ -702,7 +707,7 @@ static void spawn_near_station(void){
 }
 static void spawn_jump_arrival(void){
     /* Drop out of jump somewhere on the run-in, but do not hand the station
-       to the player dead-ahead. The compass/scanner should earn their keep. */
+     *      to the player dead-ahead. The compass/scanner should earn their keep. */
     V3 radial=vnorm(G.station);
     if(vlen(radial)<0.01f) radial=v(0,0,1);
     V3 side=vnorm(vcross(radial,v(0,1,0)));
@@ -723,11 +728,11 @@ static void enter_system(int idx, int arrive_far){
     seed(hash32(s->seed ^ 0xC0DE));
 
     /* SANE STATIC SOLAR LAYOUT:
-       - primary sun at system centre
-       - optional companion sun near centre, not a far sky prop
-       - planets on ordered heliocentric lanes
-       - moons on local child lanes around their parent planet
-       No orbit rails, no live orbital motion, no control/view changes. */
+     *      - primary sun at system centre
+     *      - optional companion sun near centre, not a far sky prop
+     *      - planets on ordered heliocentric lanes
+     *      - moons on local child lanes around their parent planet
+     *      No orbit rails, no live orbital motion, no control/view changes. */
     G.nstar = (xr()%5==0)?2:1;
     G.star[0].pos = v(0,0,0);
     G.star[0].r = 520 + frand()*260;
@@ -750,14 +755,14 @@ static void enter_system(int idx, int arrive_far){
         /* lane-based planet type: inner rocky, middle habitable-ish, outer giants/ice/rock */
         u32 r=xr()%100;
         if(p==0) b->type = (r<45)?3:((r<75)?1:2);                 /* rock/desert/temperate */
-        else if(p<3) b->type = (r<32)?0:((r<62)?2:((r<82)?1:3));  /* ocean/temperate/desert/rock */
-        else b->type = (r<48)?4:((r<72)?3:((r<88)?1:0));          /* gas/rock/desert/ocean */
+            else if(p<3) b->type = (r<32)?0:((r<62)?2:((r<82)?1:3));  /* ocean/temperate/desert/rock */
+                else b->type = (r<48)?4:((r<72)?3:((r<88)?1:0));          /* gas/rock/desert/ocean */
 
-        if(b->type==4) b->r = 440 + frand()*330;
-        else if(b->type==0 || b->type==2) b->r = 190 + frand()*170;
-        else b->r = 145 + frand()*150;
+                    if(b->type==4) b->r = 440 + frand()*330;
+                    else if(b->type==0 || b->type==2) b->r = 190 + frand()*170;
+                    else b->r = 145 + frand()*150;
 
-        f32 ang = frand()*TAU + golden*(f32)p;
+                    f32 ang = frand()*TAU + golden*(f32)p;
         b->pos = v(f_cos(ang)*lane, srand2()*(35+22*p), f_sin(ang)*lane);
         b->has_ring = (b->type==4 && frand()<0.70f) || (b->type==3 && frand()<0.08f);
         b->has_atmo = (b->type!=3 && frand()<0.68f) || b->type==4;
@@ -792,27 +797,27 @@ static void enter_system(int idx, int arrive_far){
     if(G.hab_body<0) G.hab_body=0;
 
     /* Pick a port world that is genuinely a planet-side/orbital destination, not
-       an inner rock roasting beside the sun. Prefer non-gas planets safely clear
-       of all stars; otherwise use the farthest main planet. */
+     *      an inner rock roasting beside the sun. Prefer non-gas planets safely clear
+     *      of all stars; otherwise use the farthest main planet. */
     { int best=G.hab_body; f32 bestscore=-999999.0f;
-      for(int i=0;i<G.nb;i++){
-        Body* b=&G.body[i]; if(b->parent>=0) continue;
-        V3 bp=body_draw_pos(i); f32 mind=999999.0f;
-        for(int si=0;si<G.nstar;si++){ f32 d=vlen(vsub(bp,G.star[si].pos))-G.star[si].r-b->r; if(d<mind) mind=d; }
-        f32 score=mind + (b->type!=4?900.0f:0.0f) + ((b->type==0||b->type==2)?450.0f:0.0f);
-        if(score>bestscore){ bestscore=score; best=i; }
-      }
-      G.hab_body=best;
+        for(int i=0;i<G.nb;i++){
+            Body* b=&G.body[i]; if(b->parent>=0) continue;
+            V3 bp=body_draw_pos(i); f32 mind=999999.0f;
+            for(int si=0;si<G.nstar;si++){ f32 d=vlen(vsub(bp,G.star[si].pos))-G.star[si].r-b->r; if(d<mind) mind=d; }
+            f32 score=mind + (b->type!=4?900.0f:0.0f) + ((b->type==0||b->type==2)?450.0f:0.0f);
+            if(score>bestscore){ bestscore=score; best=i; }
+        }
+        G.hab_body=best;
     }
 
     /* station grammar: economy/government/tech choose silhouette, not a stored model */
     if(s->eco==ECO_LAWLESS || s->gov==GOV_ANARCHY) G.station_type=3;          /* black port */
-    else if(s->eco==ECO_AGRI) G.station_type=4;                              /* agri hab */
-    else if((s->gov==GOV_CONFED || s->gov==GOV_FEUDAL) && s->danger>5) G.station_type=5; /* fortress */
-    else if(s->eco==ECO_TECH || s->gov==GOV_CORP || s->tech>8) G.station_type=1; /* corporate/research */
-    else if(s->eco==ECO_MINE || s->eco==ECO_REFINE || s->eco==ECO_IND) G.station_type=2; /* industrial */
-    else G.station_type=0;                                                    /* trade spindle */
-    G.station_scale = 18 + frand()*10;
+        else if(s->eco==ECO_AGRI) G.station_type=4;                              /* agri hab */
+            else if((s->gov==GOV_CONFED || s->gov==GOV_FEUDAL) && s->danger>5) G.station_type=5; /* fortress */
+                else if(s->eco==ECO_TECH || s->gov==GOV_CORP || s->tech>8) G.station_type=1; /* corporate/research */
+                    else if(s->eco==ECO_MINE || s->eco==ECO_REFINE || s->eco==ECO_IND) G.station_type=2; /* industrial */
+                        else G.station_type=0;                                                    /* trade spindle */
+                            G.station_scale = 18 + frand()*10;
     G.station_spin  = 6 + frand()*10;
     V3 anchor = body_draw_pos(G.hab_body);
     Body* hb=&G.body[G.hab_body];
@@ -865,10 +870,11 @@ static void enter_system(int idx, int arrive_far){
         int forced = arrive_far && s->danger>5 && i < ((threat-3)/2 + (s->danger>7));
         if(arrive_far && (xr()%(threat>7?18:26))==0) e->type=SHIP_ALIEN;
         else if((G.wanted||G.kills>5) && arrive_far && r<18) e->type=SHIP_FIGHTER;       /* bounty hunter */
-        else if(forced || r < pirate_roll*8 || (s->gov==GOV_ANARCHY && r<46)) e->type=SHIP_PIRATE;
-        else if((s->eco==ECO_MINE || s->eco==ECO_REFINE) && r<70) e->type=SHIP_MINER;
-        else if(r>82) e->type=SHIP_FREIGHTER;
-        else e->type = (xr()%3==0? SHIP_TRADER : SHIP_POLICE);
+            else if(forced || r < pirate_roll*8 || (s->gov==GOV_ANARCHY && r<46)) e->type=SHIP_PIRATE;
+            else if((s->eco==ECO_MINE || s->eco==ECO_REFINE) && r<70) e->type=SHIP_MINER;
+            else if(r>82) e->type=SHIP_FREIGHTER;
+            else e->type = (xr()%3==0? SHIP_TRADER : SHIP_POLICE);
+            e->target = e->type==SHIP_PIRATE||e->type==SHIP_FIGHTER||(e->type==SHIP_ALIEN&&(xr()&1));
         e->maxhull = e->type==SHIP_PIRATE?82:(e->type==SHIP_POLICE?125:(e->type==SHIP_ALIEN?150:(e->type==SHIP_FIGHTER?105:(e->type==SHIP_FREIGHTER?115:(e->type==SHIP_MINER?90:62)))));
         e->hull = e->maxhull;
         if(arrive_far){
@@ -891,7 +897,7 @@ static void enter_system(int idx, int arrive_far){
 static void new_game(u32 master){
     m_set(&G,0,sizeof(G));
     gen_galaxy(master);
-    G.maxhull=100; G.hull=100; G.maxshield=60; G.shield=60;
+    G.maxhull=100; G.hull=100; G.maxshield=75; G.shield=75;
     G.credits=100; G.maxfuel=7; G.fuel=7; G.cargo_max=20;
     G.jump_range=7.0f; G.missiles=3; G.laser_level=1; G.legal=0; G.kills=0;
     G.target=-1; G.state=ST_STATUS; G.docked=1;
@@ -968,7 +974,7 @@ static void buy_equipment_item(int i){
         case 1: if(G.missiles<4) G.missiles++; break;
         case 2: G.cargo_max=35; break;
         case 3: G.laser_level=2; break;
-        case 4: G.extra_energy=1; G.maxshield+=20; G.shield=G.maxshield; break;
+        case 4: G.extra_energy=1; G.maxshield+=25; G.shield=G.maxshield; break;
         case 5: G.laser_level=3; break;
     }
 }
@@ -978,7 +984,7 @@ static void set_crime(int lvl){
 }
 static int illegal_cargo_count(void){ return G.cargo[4] + G.cargo[5]; }
 static int cargo_value_here(void){ int v=0; System* s=&gal[G.cur]; for(int i=0;i<NCOM;i++) v+=G.cargo[i]*s->price[i]; return v; }
-static int system_safe_zone(void){ return vlen(vsub(G.station,G.ppos)) < 900.0f; }
+static int ship_hostile(Ship* e){ return e->target||(G.wanted&&e->type==SHIP_POLICE); }
 
 
 static f32 sys_dist_idx(int a,int b){
@@ -998,7 +1004,7 @@ static int held_sale_profit_to(int dst){
 static int best_trade_to(int dst, int* outc){
     int best=-9999, bc=0, any=0; System* c=&gal[G.cur]; System* t=&gal[dst];
     /* Prefer things the commander can actually afford now. Fallback still shows
-       the market truth if nothing affordable makes money. */
+     *      the market truth if nothing affordable makes money. */
     for(int i=0;i<NCOM;i++){
         int p=t->price[i]-c->price[i];
         if(affordable_units(i)>0 && p>best){ best=p; bc=i; any=1; }
@@ -1078,19 +1084,13 @@ static void player_damage_ship(int i, f32 dmg){
     if(G.e[i].hull<=0){
         int t=G.e[i].type;
         G.e[i].alive=0;
-        if(ship_threat_type(t)){ G.credits += (t==SHIP_ALIEN)?220:(t==SHIP_FIGHTER?170:130); G.kills++; G.sys_kills[G.cur]++; sfx_play(SFX_KILL); }
+        if(G.e[i].target){ G.credits += (t==SHIP_ALIEN)?220:(t==SHIP_FIGHTER?170:130); G.kills++; G.sys_kills[G.cur]++; sfx_play(SFX_KILL); }
         else { G.credits -= 40; set_crime(t==SHIP_POLICE?2:1); sfx_play(SFX_KILL); }
         if(G.target==i) G.target=-1;
     }
 }
 static int missile_lock_target(void){
     int best=-1; f32 bs=0.965f;
-    /* Top-Gun-ish: basic missiles need a nose-on lock. TAB can prefer a
-       target, but it still has to be inside the seeker cone. */
-    if(G.target>=0 && G.target<G.ne && G.e[G.target].alive){
-        V3 to=vsub(G.e[G.target].pos,G.ppos); f32 d=vlen(to);
-        if(d>35 && d<1600 && vdot(vnorm(to),G.pf)>0.955f) return G.target;
-    }
     for(int i=0;i<G.ne;i++) if(G.e[i].alive){
         V3 to=vsub(G.e[i].pos,G.ppos); f32 d=vlen(to); if(d<35 || d>1500) continue;
         f32 a=vdot(vnorm(to),G.pf);
@@ -1125,22 +1125,22 @@ static void fire_player(void){
     sfx_play(SFX_LASER);
     V3 base = vadd(G.ppos, vmul(G.pf,2.3f));
     V3 gun[2]={ vadd(vadd(base, vmul(G.pr,-0.85f)), vmul(G.pu,-0.35f)),
-                vadd(vadd(base, vmul(G.pr, 0.85f)), vmul(G.pu,-0.35f)) };
-    for(int g=0; g<2; g++){
-        V3 dir = vnorm(vadd(G.pf, vmul(G.pr, g? -0.012f:0.012f)));
-        V3 end = vadd(gun[g], vmul(dir,1900));
-        int besthit=-1; f32 bestt=1e9f;
-        for(int i=0;i<G.ne;i++){
-            if(!G.e[i].alive) continue;
-            f32 t=ray_sphere(gun[g], dir, G.e[i].pos, 7.0f);
-            if(t>0 && t<bestt){ bestt=t; besthit=i; }
+        vadd(vadd(base, vmul(G.pr, 0.85f)), vmul(G.pu,-0.35f)) };
+        for(int g=0; g<2; g++){
+            V3 dir = vnorm(vadd(G.pf, vmul(G.pr, g? -0.012f:0.012f)));
+            V3 end = vadd(gun[g], vmul(dir,1900));
+            int besthit=-1; f32 bestt=1e9f;
+            for(int i=0;i<G.ne;i++){
+                if(!G.e[i].alive) continue;
+                f32 t=ray_sphere(gun[g], dir, G.e[i].pos, 7.0f);
+                if(t>0 && t<bestt){ bestt=t; besthit=i; }
+            }
+            if(besthit>=0){
+                end = vadd(gun[g], vmul(dir,bestt));
+                player_damage_ship(besthit, (G.laser_level==3?26:(G.laser_level==2?17:11)));
+            }
+            add_beam(gun[g],end,0);
         }
-        if(besthit>=0){
-            end = vadd(gun[g], vmul(dir,bestt));
-            player_damage_ship(besthit, (G.laser_level==3?26:(G.laser_level==2?17:11)));
-        }
-        add_beam(gun[g],end,0);
-    }
 }
 
 static void update(f32 dt, const u8* ks){
@@ -1185,62 +1185,83 @@ static void update(f32 dt, const u8* ks){
     f32 spd=vlen(G.pvel); f32 cap = boost?520:300;
     if(spd>cap) G.pvel=vmul(G.pvel,cap/spd);
     if(boost){ energy_spend_soft((7.0f + 12.0f*clampf(spd/520.0f,0,1))*dt); } /* tuned: boost should pressure generator, not murder it */
-    G.ppos = vadd(G.ppos, vmul(G.pvel, dt));
-    /* engine/thrust audio: speed hum plus a small boost/load lift */
-    G.audio_target_amp = clampf(spd/520.0f + (boost?0.18f:0.0f),0,1);
+        G.ppos = vadd(G.ppos, vmul(G.pvel, dt));
+        /* engine/thrust audio: speed hum plus a small boost/load lift */
+        G.audio_target_amp = clampf(spd/520.0f + (boost?0.18f:0.0f),0,1);
 
-    /* ---- heat: star proximity only. Ordinary flight must never cook you. ---- */
-    { f32 bd=999999.0f; for(int si=0;si<G.nstar;si++){ f32 d=vlen(vsub(G.star[si].pos,G.ppos))-G.star[si].r; if(d<bd) bd=d; }
-      f32 target_temp = clampf((3600.0f-bd)/3600.0f, 0, 1);
-      f32 rate = (target_temp>G.cabin_temp)?0.55f:0.30f;
-      G.cabin_temp += (target_temp-G.cabin_temp)*rate*dt;
-      if(G.cabin_temp<0) G.cabin_temp=0;
-      if(G.cabin_temp>1) G.cabin_temp=1;
-      if(G.cabin_temp>=0.995f){
-          f32 burn = 18.0f + clampf((-bd)/900.0f,0,1)*36.0f;
-          if(G.shield>0){ G.shield-=burn*dt; if(G.shield<0){ G.hull+=G.shield; G.shield=0; } }
-          else G.hull-=burn*dt*1.15f;
-          G.shield_cd=3.0f;
-          if(G.heat_warn_cd<=0){ sfx_play(SFX_WARN); G.heat_warn_cd=0.75f; }
-      }
-    }
+        /* ---- heat: star proximity only. Ordinary flight must never cook you. ---- */
+        { f32 bd=999999.0f; for(int si=0;si<G.nstar;si++){ f32 d=vlen(vsub(G.star[si].pos,G.ppos))-G.star[si].r; if(d<bd) bd=d; }
+        f32 target_temp = clampf((3600.0f-bd)/3600.0f, 0, 1);
+        f32 rate = (target_temp>G.cabin_temp)?0.55f:0.30f;
+        G.cabin_temp += (target_temp-G.cabin_temp)*rate*dt;
+        if(G.cabin_temp<0) G.cabin_temp=0;
+        if(G.cabin_temp>1) G.cabin_temp=1;
+        if(G.cabin_temp>=0.995f){
+            f32 burn = 18.0f + clampf((-bd)/900.0f,0,1)*36.0f;
+            if(G.shield>0){ G.shield-=burn*dt; if(G.shield<0){ G.hull+=G.shield; G.shield=0; } }
+            else G.hull-=burn*dt*1.15f;
+            G.shield_cd=3.0f;
+            if(G.heat_warn_cd<=0){ sfx_play(SFX_WARN); G.heat_warn_cd=0.75f; }
+        }
+        }
 
-    /* ---- firing ---- */
-    if(ks[SC_SPACE] || (mb & SDL_BUTTON_LMASK)) fire_player();
-    if((mb & SDL_BUTTON_RMASK) && !(prevmb & SDL_BUTTON_RMASK)) fire_missile();
-    prevmb=mb;
+        /* ---- firing ---- */
+        if(mb & SDL_BUTTON_LMASK) fire_player();
+        if((mb & SDL_BUTTON_RMASK) && !(prevmb & SDL_BUTTON_RMASK)) fire_missile();
+        prevmb=mb;
 
-    /* ---- target nearest (Tab) ---- */
-    if(edge(ks,SC_TAB)){
-        int best=-1; f32 bd=1e18f;
-        for(int i=0;i<G.ne;i++){ if(!G.e[i].alive)continue; f32 d=vlen(vsub(G.e[i].pos,G.ppos)); if(d<bd){bd=d;best=i;} }
-        G.target=best;
-    }
+    /* ---- target nose contact ---- */
+    G.target=missile_lock_target();
 
     /* ---- enemy AI ---- */
     for(int i=0;i<G.ne;i++){
         Ship* e=&G.e[i]; if(!e->alive) continue;
         V3 toP = vsub(G.ppos, e->pos); f32 d=vlen(toP); V3 dir=vnorm(toP);
-        int hostile = ((e->type==SHIP_PIRATE) && !system_safe_zone()) || e->type==SHIP_ALIEN || e->type==SHIP_FIGHTER || (G.wanted && e->type==SHIP_POLICE);
+        int hostile = ship_hostile(e);
         if(e->fire_cd>0) e->fire_cd-=dt;
         if(e->radar_flash>0) e->radar_flash-=dt;
         if(hostile){
-            f32 want = (e->hull < e->maxhull*0.3f)? -200 : (d>260? 160 : (d<90? -90: 40));
-            V3 desired = vmul(dir, want);
-            /* strafe a little so it isn't a head-on jouster */
+            f32 want = (e->hull < e->maxhull*0.3f)? -230 : (d>760? 230 : (d<310? -75: 55));
             V3 side = vnorm(vcross(dir, v(0,1,0)));
-            desired = vadd(desired, vmul(side, f_sin(G.t*1.7f+i)*70));
-            e->vel = vadd(vmul(e->vel,0.95f), vmul(desired, dt*1.2f));
-            f32 es=vlen(e->vel); if(es>240) e->vel=vmul(e->vel,240/es);
+            V3 desired = vadd(vmul(dir, want), vmul(side, f_sin(G.t*1.5f+i)*(d>700?45:95)));
+            e->vel = vadd(vmul(e->vel,0.94f), vmul(desired, dt*1.5f));
+            f32 es=vlen(e->vel); if(es>280) e->vel=vmul(e->vel,280/es);
             e->pos = vadd(e->pos, vmul(e->vel,dt));
-            /* fire if roughly aimed and in range */
-            if(d<520 && e->fire_cd<=0){
-                e->fire_cd = 0.7f + frand()*0.5f;
+            if(d<EFIRE_RANGE && e->fire_cd<=0){
+                /* ---- distance‑based fire cooldown (cubic) ---- */
+                f32 q=d/EFIRE_RANGE;
+                e->fire_cd = 0.3f+frand()*0.3f+16.0f*q*q*q;
                 e->radar_flash = 0.24f;
-                V3 mz = vadd(e->pos, vmul(dir,3.0f));
-                add_beam(mz, vadd(mz, vmul(dir, d)), 1);
-                if(frand() < 0.55f - d/1600.0f){
-                    f32 dmg = 6 + frand()*8;
+
+                /* per-class gunnery: smaller cone = tighter shot group.
+                 *                  collapse to one constant if you want flat skill across ships. */
+                f32 acc = e->type==SHIP_ALIEN  ? 0.009f
+                : e->type==SHIP_FIGHTER ? 0.011f
+                : e->type==SHIP_POLICE  ? 0.013f
+                :                          0.016f;   /* pirate baseline */
+
+                /* instant beam: aim at where the player IS. the gunner's real
+                 *                  problem is holding the reticle on a crossing blip, so the cone
+                 *                  bloats with the target's transverse angular rate. fly straight
+                 *                  (even straight away) and vtan~0 -> dead on the nose; jink and
+                 *                  the shot group blows wide. that, finally, is the "lock". */
+                V3  mz   = vadd(e->pos, vmul(dir,3.0f));
+                V3  vrel = vsub(G.pvel, e->vel);
+                f32 vtan = vlen(vsub(vrel, vmul(dir, vdot(vrel,dir))));
+                f32 sigma = acc + ETRACK*(vtan/(d+1.0f));
+
+                /* scatter the shot inside that cone, then fire THAT exact ray */
+                V3  ar = vnorm(vcross(dir, v(0,1,0))); if(vlen(ar)<0.01f) ar=v(1,0,0);
+                V3  au = vcross(ar, dir);
+                V3  fdir = vnorm(vadd(dir, vadd(vmul(ar, srand2()*sigma),
+                                                vmul(au, srand2()*sigma))));
+                add_beam(mz, vadd(mz, vmul(fdir, d)), 1);
+
+                /* honest hit: does the drawn ray graze the player's hull sphere? */
+                f32 tc = vdot(vsub(G.ppos, mz), fdir);
+                V3  ca = vadd(mz, vmul(fdir, tc>0?tc:0.0f));
+                if(tc>0 && vlen(vsub(G.ppos, ca)) < PLAYER_R){
+                    f32 dmg = (6 + frand()*8)*(1.0f-q*0.65f);
                     if(G.shield>0){ f32 sd=dmg*shield_hit_scale(); G.shield-=sd; if(G.shield<0){ G.hull+=G.shield; G.shield=0; } }
                     else G.hull-=dmg*1.18f;
                     G.shield_cd=3.0f; sfx_play(SFX_DAMAGE);
@@ -1290,7 +1311,7 @@ static void update(f32 dt, const u8* ks){
 }
 
 /* docked/menu interactions: one responsibility per page.
-   Command Slate is the hub. Market is cargo only. Equip Ship is services/kit. */
+ *  Command Slate is the hub. Market is cargo only. Equip Ship is services/kit. */
 static void launch_from_dock(void){
     G.state=ST_FLIGHT; G.docked=0; G.alert_code=6; G.alert_t=2.5f; sfx_play(SFX_LAUNCH); p_SDL_SetRelativeMouseMode(1);
 }
@@ -1322,14 +1343,13 @@ static void update_map(const u8* ks){
     int reachable_only = !ks[SC_LSHIFT];
     if(edge(ks,SC_RIGHT)||edge(ks,SC_DOWN)) G.mapsel=map_next_from(G.mapsel, 1, reachable_only);
     if(edge(ks,SC_LEFT) ||edge(ks,SC_UP))   G.mapsel=map_next_from(G.mapsel,-1, reachable_only);
-    if(edge(ks,SC_TAB)) G.mapsel=map_best_dest();
     if(edge(ks,SC_RETURN) || edge(ks,SC_J)){
         if(can_jump_idx(G.mapsel)){
             G.fuel -= fuel_need_idx(G.cur,G.mapsel);
             G.target=G.mapsel; G.alert_t=1.85f; G.state=ST_JUMP; sfx_play(SFX_JUMP);
         }
     }
-    if(edge(ks,SC_5) || edge(ks,SC_6)){ G.state=ST_DATA; p_SDL_SetRelativeMouseMode(0); }
+    if(edge(ks,SC_5)){ G.state=ST_DATA; p_SDL_SetRelativeMouseMode(0); }
     if(edge(ks,SC_BACKSPACE) || edge(ks,SC_M)){ G.state=G.map_back_state?G.map_back_state:ST_FLIGHT; p_SDL_SetRelativeMouseMode(0); }
 }
 
@@ -1569,12 +1589,12 @@ static void draw_world(void){
     p_glTranslatef(G.station.x,G.station.y,G.station.z);
     p_glRotatef(G.t*G.station_spin,0,0,1);
     if(G.station_type==3) p_glColor3f(0.48f,0.31f,0.28f);       /* black port */
-    else if(G.station_type==2) p_glColor3f(0.62f,0.58f,0.48f);  /* industrial */
-    else if(G.station_type==1) p_glColor3f(0.58f,0.70f,0.86f);  /* corp/research */
-    else if(G.station_type==4) p_glColor3f(0.46f,0.68f,0.48f);  /* agri */
-    else if(G.station_type==5) p_glColor3f(0.66f,0.68f,0.74f);  /* fortress */
-    else p_glColor3f(0.62f,0.64f,0.68f);
-    p_glScalef(G.station_scale,G.station_scale,G.station_scale);
+        else if(G.station_type==2) p_glColor3f(0.62f,0.58f,0.48f);  /* industrial */
+            else if(G.station_type==1) p_glColor3f(0.58f,0.70f,0.86f);  /* corp/research */
+                else if(G.station_type==4) p_glColor3f(0.46f,0.68f,0.48f);  /* agri */
+                    else if(G.station_type==5) p_glColor3f(0.66f,0.68f,0.74f);  /* fortress */
+                        else p_glColor3f(0.62f,0.64f,0.68f);
+                        p_glScalef(G.station_scale,G.station_scale,G.station_scale);
     emit_station(G.station_type);
     p_glPopMatrix();
 
@@ -1588,14 +1608,14 @@ static void draw_world(void){
         p_glTranslatef(e->pos.x,e->pos.y,e->pos.z);
         p_glRotatef(yaw,0,1,0); p_glRotatef(pit,1,0,0);
         { f32 sx=1.0f,sy=1.0f,sz=1.0f,sc=4.5f;
-          if(e->type==SHIP_TRADER){ sx=1.18f; sy=1.02f; sz=0.96f; sc=4.8f; }
-          if(e->type==SHIP_FREIGHTER){ sx=1.22f; sy=1.05f; sz=1.42f; sc=5.4f; }
-          if(e->type==SHIP_POLICE){ sx=0.82f; sy=0.74f; sz=1.22f; sc=4.6f; }
-          if(e->type==SHIP_FIGHTER){ sx=0.68f; sy=0.68f; sz=1.44f; sc=4.55f; }
-          if(e->type==SHIP_MINER){ sx=1.20f; sy=1.16f; sz=0.90f; sc=5.0f; }
-          if(e->type==SHIP_PIRATE){ sx=1.12f; sy=0.95f; sz=1.10f; sc=4.9f; }
-          if(e->type==SHIP_ALIEN){ sx=1.08f; sy=1.18f; sz=1.06f; sc=4.9f; }
-          p_glScalef(sc*sx,sc*sy,sc*sz);
+            if(e->type==SHIP_TRADER){ sx=1.18f; sy=1.02f; sz=0.96f; sc=4.8f; }
+            if(e->type==SHIP_FREIGHTER){ sx=1.22f; sy=1.05f; sz=1.42f; sc=5.4f; }
+            if(e->type==SHIP_POLICE){ sx=0.82f; sy=0.74f; sz=1.22f; sc=4.6f; }
+            if(e->type==SHIP_FIGHTER){ sx=0.68f; sy=0.68f; sz=1.44f; sc=4.55f; }
+            if(e->type==SHIP_MINER){ sx=1.20f; sy=1.16f; sz=0.90f; sc=5.0f; }
+            if(e->type==SHIP_PIRATE){ sx=1.12f; sy=0.95f; sz=1.10f; sc=4.9f; }
+            if(e->type==SHIP_ALIEN){ sx=1.08f; sy=1.18f; sz=1.06f; sc=4.9f; }
+            p_glScalef(sc*sx,sc*sy,sc*sz);
         }
         ship_color(e->type); emit_ship(e->type);
         if(e->radar_flash>0){ f32 r,g,b; ship_rgb(e->type,&r,&g,&b); p_glColor3f(1.0f,0.9f,0.28f); p_glPointSize(7.0f); p_glBegin(GL_POINTS); p_glVertex3f(0,0,2.8f); p_glEnd(); p_glColor3f(r,g,b); }
@@ -1680,7 +1700,7 @@ static int nearest_contact(void){
 static int nearest_hostile(void){
     int found=0; f32 bd=999999.0f;
     for(int i=0;i<G.ne;i++) if(G.e[i].alive){
-        int h=ship_threat_type(G.e[i].type)||(G.wanted&&G.e[i].type==SHIP_POLICE);
+        Ship* e=&G.e[i]; int h=ship_hostile(e);
         if(h){ f32 d=vlen(vsub(G.e[i].pos,G.ppos)); if(d<bd){bd=d;found=1;} }
     }
     return found && bd<900.0f;
@@ -1698,7 +1718,8 @@ static void draw_ship_tags(void){
         f32 r,g,b; ship_rgb(e->type,&r,&g,&b);
         const char* nm=ship_name(e->type); f32 sc=d<450.0f?1.45f:1.18f;
         text(sx-textw(nm,sc)*0.5f,sy,sc,nm,r,g,b);
-        if(d<900.0f){ char db[18]; int k=0; bnum(db,&k,(int)d); text(sx-textw(db,0.92f)*0.5f,sy+18,0.92f,db,r*0.75f,g*0.75f,b*0.75f); }
+        if(i==G.target) text(sx-14,sy+18,0.92f,"LOCK",1.0f,0.35f,0.22f);
+        else if(d<900.0f){ char db[18]; int k=0; bnum(db,&k,(int)d); text(sx-textw(db,0.92f)*0.5f,sy+18,0.92f,db,r*0.75f,g*0.75f,b*0.75f); }
     }
 }
 
@@ -1728,24 +1749,24 @@ static void draw_hud(void){
     label_num(34,146,1.35f,"DANGER",s->danger,s->danger>5?0.95f:0.55f,s->danger>5?0.34f:0.85f,0.45f);
     text(34,172,1.55f,legal_name(),G.wanted?0.95f:0.45f,G.wanted?0.30f:0.95f,0.45f);
     { int pir=0,hun=0,pol=0,trd=0,min=0,ali=0;
-      for(int i=0;i<G.ne;i++) if(G.e[i].alive){
-        int t=G.e[i].type;
-        if(t==SHIP_PIRATE) pir++;
-        else if(t==SHIP_FIGHTER) hun++;
-        else if(t==SHIP_POLICE) pol++;
-        else if(t==SHIP_TRADER||t==SHIP_FREIGHTER) trd++;
-        else if(t==SHIP_MINER) min++;
-        else if(t==SHIP_ALIEN) ali++;
-      }
-      text(166,48,1.18f,"SENSOR",0.44f,0.82f,0.68f);
-      { char b[16]; int k=0; bcat(b,&k,"PIR "); bnum(b,&k,pir); text(166,68,1.04f,b,pir?1.0f:0.42f,pir?0.35f:0.58f,pir?0.30f:0.55f); }
-      { char b[16]; int k=0; bcat(b,&k,"POL "); bnum(b,&k,pol); text(236,68,1.04f,b,0.45f,0.70f,0.95f); }
-      { char b[16]; int k=0; bcat(b,&k,"HUN "); bnum(b,&k,hun); text(166,88,1.04f,b,hun?0.95f:0.42f,hun?0.42f:0.58f,hun?0.90f:0.55f); }
-      { char b[16]; int k=0; bcat(b,&k,"TRD "); bnum(b,&k,trd); text(236,88,1.04f,b,0.50f,0.84f,0.58f); }
-      { char b[16]; int k=0; bcat(b,&k,"MIN "); bnum(b,&k,min); text(166,108,1.04f,b,0.86f,0.62f,0.28f); }
-      { char b[16]; int k=0; bcat(b,&k,"UNK "); bnum(b,&k,ali); text(236,108,1.04f,b,ali?0.55f:0.42f,ali?0.95f:0.58f,ali?0.62f:0.55f); }
-      { char b[16]; int k=0; bcat(b,&k,"SYS "); bnum(b,&k,G.sys_kills[G.cur]); text(166,132,1.02f,b,0.88f,0.78f,0.48f); }
-      { char b[18]; int k=0; bcat(b,&k,"KILLS "); bnum(b,&k,G.kills); text(226,132,1.02f,b,0.78f,0.92f,0.80f); }
+        for(int i=0;i<G.ne;i++) if(G.e[i].alive){
+            int t=G.e[i].type;
+            if(t==SHIP_PIRATE) pir++;
+            else if(t==SHIP_FIGHTER) hun++;
+            else if(t==SHIP_POLICE) pol++;
+            else if(t==SHIP_TRADER||t==SHIP_FREIGHTER) trd++;
+            else if(t==SHIP_MINER) min++;
+            else if(t==SHIP_ALIEN) ali++;
+        }
+        text(166,48,1.18f,"SENSOR",0.44f,0.82f,0.68f);
+        { char b[16]; int k=0; bcat(b,&k,"PIR "); bnum(b,&k,pir); text(166,68,1.04f,b,pir?1.0f:0.42f,pir?0.35f:0.58f,pir?0.30f:0.55f); }
+        { char b[16]; int k=0; bcat(b,&k,"POL "); bnum(b,&k,pol); text(236,68,1.04f,b,0.45f,0.70f,0.95f); }
+        { char b[16]; int k=0; bcat(b,&k,"HUN "); bnum(b,&k,hun); text(166,88,1.04f,b,hun?0.95f:0.42f,hun?0.42f:0.58f,hun?0.90f:0.55f); }
+        { char b[16]; int k=0; bcat(b,&k,"TRD "); bnum(b,&k,trd); text(236,88,1.04f,b,0.50f,0.84f,0.58f); }
+        { char b[16]; int k=0; bcat(b,&k,"MIN "); bnum(b,&k,min); text(166,108,1.04f,b,0.86f,0.62f,0.28f); }
+        { char b[16]; int k=0; bcat(b,&k,"UNK "); bnum(b,&k,ali); text(236,108,1.04f,b,ali?0.55f:0.42f,ali?0.95f:0.58f,ali?0.62f:0.55f); }
+        { char b[16]; int k=0; bcat(b,&k,"SYS "); bnum(b,&k,G.sys_kills[G.cur]); text(166,132,1.02f,b,0.88f,0.78f,0.48f); }
+        { char b[18]; int k=0; bcat(b,&k,"KILLS "); bnum(b,&k,G.kills); text(226,132,1.02f,b,0.78f,0.92f,0.80f); }
     }
 
     panel(18,H-200,300,178,0.24f,0.85f,0.62f);
@@ -1757,78 +1778,77 @@ static void draw_hud(void){
 
     /* right target/nav panels */
     panel(W-330,22,312,202,0.22f,0.72f,0.95f);
-    text(W-312,50,1.45f,"TARGET / CONTACT",0.45f,0.82f,1.0f);
+    text(W-312,50,1.45f,"TARGET",0.45f,0.82f,1.0f);
     if(G.target>=0 && G.target<G.ne && G.e[G.target].alive){
         Ship* t=&G.e[G.target]; f32 td=vlen(vsub(t->pos,G.ppos));
         text(W-312,82,2.0f,ship_name(t->type),t->type==SHIP_PIRATE?1.0f:0.75f,t->type==SHIP_PIRATE?0.35f:0.95f,0.65f);
         label_num(W-312,112,1.45f,"DIST",(int)td,0.70f,0.88f,0.92f);
         label_num(W-312,138,1.45f,"HULL",(int)t->hull,0.88f,0.76f,0.50f);
-        { int th=ship_threat_type(t->type)||(G.wanted&&t->type==SHIP_POLICE); text(W-312,166,1.35f,th?"STATUS HOSTILE":"STATUS NEUTRAL",th?1.0f:0.55f,th?0.35f:0.85f,0.45f); }
+        { int th=ship_hostile(t); text(W-312,166,1.35f,th?"STATUS HOSTILE":"STATUS NEUTRAL",th?1.0f:0.55f,th?0.35f:0.85f,0.45f); }
     } else {
         text(W-312,84,1.8f,"NO TARGET",0.55f,0.70f,0.72f);
-        text(W-312,114,1.25f,"TAB LOCKS NEAREST CONTACT",0.38f,0.58f,0.62f);
     }
-    { int ml=missile_lock_target(); char mbuf[40]; int k=0; bcat(mbuf,&k,"LMB LASER  RMB MISSILE "); bnum(mbuf,&k,G.missiles); text(W-312,190,1.18f,mbuf,G.missiles?0.86f:0.45f,G.missiles?0.82f:0.45f,0.50f);
-      text(W-312,210,1.18f,ml>=0?"MISSILE LOCK":"NO MISSILE LOCK",ml>=0?0.95f:0.50f,ml>=0?0.35f:0.55f,ml>=0?0.22f:0.58f); }
-    tiny_lamp(W-80,184,hostile,1.0f,0.25f,0.18f); text(W-62,194,1.2f,hostile?"RED":"GREEN",hostile?1.0f:0.45f,hostile?0.25f:0.95f,0.40f);
+    { int ml=G.target; char mbuf[40]; int k=0; bcat(mbuf,&k,"LMB LASER RMB MSL "); bnum(mbuf,&k,G.missiles); text(W-312,190,1.18f,mbuf,G.missiles?0.86f:0.45f,G.missiles?0.82f:0.45f,0.50f);
+        text(W-312,210,1.18f,ml>=0?"LOCK":"NO LOCK",ml>=0?0.95f:0.50f,ml>=0?0.35f:0.55f,ml>=0?0.22f:0.58f); }
+        tiny_lamp(W-80,184,hostile,1.0f,0.25f,0.18f); text(W-62,194,1.2f,hostile?"RED":"GREEN",hostile?1.0f:0.45f,hostile?0.25f:0.95f,0.40f);
 
-    panel(W-330,H-226,312,204,0.22f,0.72f,0.95f);
-    text(W-312,H-200,1.45f,"NAV / TRADE",0.45f,0.82f,1.0f);
-    label_num(W-312,H-170,1.35f,"SPEED",(int)spd,0.65f,0.85f,0.80f);
-    label_num(W-172,H-170,1.35f,"RANGE",(int)G.jump_range,0.65f,0.75f,0.90f);
-    label_num(W-312,H-144,1.35f,"STATION",(int)station_d,0.70f,0.88f,0.95f);
-    label_num(W-312,H-118,1.35f,"CARGO",cargo_used(),0.75f,0.82f,0.82f);
-    label_num(W-172,H-118,1.35f,"CAP",G.cargo_max,0.75f,0.82f,0.82f);
-    label_num(W-312,H-92,1.35f,"CREDITS",G.credits,0.78f,1.0f,0.74f);
-    label_num(W-312,H-66,1.35f,"PLANETS",G.nb,0.58f,0.72f,0.84f);
-    label_num(W-172,H-66,1.35f,"SUNS",G.nstar,0.88f,0.78f,0.48f);
-    if(G.docked_ok) text(W-312,H-40,1.35f,"F DOCK READY",0.48f,1.0f,0.58f);
-    else { char rb[44]; int k=0; bcat(rb,&k,"STATION RANGE "); int n=1+(int)(station_d/180.0f); if(n<1)n=1; if(n>12)n=12; for(int i=0;i<n && k<42;i++) rb[k++]='-'; rb[k]=0; text(W-312,H-40,1.35f,rb,0.55f,0.60f,0.58f); }
+        panel(W-330,H-226,312,204,0.22f,0.72f,0.95f);
+        text(W-312,H-200,1.45f,"NAV / TRADE",0.45f,0.82f,1.0f);
+        label_num(W-312,H-170,1.35f,"SPEED",(int)spd,0.65f,0.85f,0.80f);
+        label_num(W-172,H-170,1.35f,"RANGE",(int)G.jump_range,0.65f,0.75f,0.90f);
+        label_num(W-312,H-144,1.35f,"STATION",(int)station_d,0.70f,0.88f,0.95f);
+        label_num(W-312,H-118,1.35f,"CARGO",cargo_used(),0.75f,0.82f,0.82f);
+        label_num(W-172,H-118,1.35f,"CAP",G.cargo_max,0.75f,0.82f,0.82f);
+        label_num(W-312,H-92,1.35f,"CREDITS",G.credits,0.78f,1.0f,0.74f);
+        label_num(W-312,H-66,1.35f,"PLANETS",G.nb,0.58f,0.72f,0.84f);
+        label_num(W-172,H-66,1.35f,"SUNS",G.nstar,0.88f,0.78f,0.48f);
+        if(G.docked_ok) text(W-312,H-40,1.35f,"F DOCK READY",0.48f,1.0f,0.58f);
+        else { char rb[44]; int k=0; bcat(rb,&k,"STATION RANGE "); int n=1+(int)(station_d/180.0f); if(n<1)n=1; if(n>12)n=12; for(int i=0;i<n && k<42;i++) rb[k++]='-'; rb[k]=0; text(W-312,H-40,1.35f,rb,0.55f,0.60f,0.58f); }
 
-    /* Elite scanner: bottom centre with lollipop blips */
-    f32 cx=W/2, cy=H-104, rw=160, rh=62;
-    p_glColor4f(0.07f,0.11f,0.11f,0.82f);
-    p_glBegin(GL_QUADS); p_glVertex2f(cx-rw-22,cy-rh-22);p_glVertex2f(cx+rw+22,cy-rh-22);p_glVertex2f(cx+rw+22,cy+rh+26);p_glVertex2f(cx-rw-22,cy+rh+26);p_glEnd();
-    p_glColor4f(0.28f,0.90f,0.60f,0.62f);
-    p_glBegin(GL_LINE_LOOP); for(int i=0;i<48;i++){ f32 a=TAU*i/48; p_glVertex2f(cx+f_cos(a)*rw, cy+f_sin(a)*rh); } p_glEnd();
-    p_glPointSize(5);
-    p_glBegin(GL_POINTS); p_glVertex2f(cx,cy); p_glEnd();
-    const f32 scan_r = 5200.0f;
-    /* scanner uses local position within a fixed range, not pure direction.
-       That stops nearby contacts from vanishing under far contacts in the same bearing. */
-    { V3 rel=vsub(G.station,G.ppos); f32 fx=vdot(rel,G.pr), fy=vdot(rel,G.pu), fz=vdot(rel,G.pf); f32 d=vlen(rel); if(d>0.1f){
-        f32 sx=cx+clampf(fx/scan_r,-1,1)*rw*0.92f, sy=cy-clampf(fz/scan_r,-1,1)*rh*0.92f, stem=clampf(fy/900.0f,-1,1)*32.0f;
-        p_glColor3f(0.45f,0.75f,1.0f); p_glBegin(GL_LINES); p_glVertex2f(sx,sy); p_glVertex2f(sx,sy-stem); p_glEnd();
-        p_glBegin(GL_LINE_LOOP); p_glVertex2f(sx-4,sy-stem-4); p_glVertex2f(sx+4,sy-stem-4); p_glVertex2f(sx+4,sy-stem+4); p_glVertex2f(sx-4,sy-stem+4); p_glEnd(); }}
-    for(int i=0;i<G.ne;i++){ if(!G.e[i].alive)continue;
-        V3 rel=vsub(G.e[i].pos,G.ppos); f32 d=vlen(rel); if(d<0.1f) d=0.1f;
-        f32 fx=vdot(rel,G.pr), fy=vdot(rel,G.pu), fz=vdot(rel,G.pf);
-        f32 sx=cx+clampf(fx/scan_r,-1,1)*rw*0.90f, sy=cy-clampf(fz/scan_r,-1,1)*rh*0.90f, stem=clampf(fy/700.0f,-1,1)*30.0f;
-        int host=ship_threat_type(G.e[i].type)||(G.wanted&&G.e[i].type==SHIP_POLICE);
-        int tgt=(i==G.target);
-        f32 rr,gg,bb; ship_rgb(G.e[i].type,&rr,&gg,&bb);
-        if(G.e[i].type==SHIP_ALIEN){ f32 q=0.55f+0.45f*f_sin(G.t*17.0f+i*1.7f); rr*=q; bb=0.72f+0.28f*q; }
-        f32 fl=clampf(G.e[i].radar_flash*6.0f,0,1);
-        if(fl>0.02f){ rr=rr*(1.0f-fl)+1.0f*fl; gg=gg*(1.0f-fl)+1.0f*fl; bb=bb*(1.0f-fl)+0.25f*fl; }
-        p_glColor3f(rr,gg,bb);
-        p_glBegin(GL_LINES); p_glVertex2f(sx,sy); p_glVertex2f(sx,sy-stem); p_glEnd();
-        p_glPointSize((tgt?6.5f:4.6f) + fl*5.0f + (host?0.7f:0.0f));
-        p_glBegin(GL_POINTS); p_glVertex2f(sx,sy-stem); p_glEnd();
-        if(fl>0.02f){ p_glBegin(GL_LINE_LOOP); p_glVertex2f(sx-7,sy-stem-7); p_glVertex2f(sx+7,sy-stem-7); p_glVertex2f(sx+7,sy-stem+7); p_glVertex2f(sx-7,sy-stem+7); p_glEnd(); }
-        else if(tgt){ p_glBegin(GL_LINE_LOOP); p_glVertex2f(sx-5,sy-stem-5); p_glVertex2f(sx+5,sy-stem-5); p_glVertex2f(sx+5,sy-stem+5); p_glVertex2f(sx-5,sy-stem+5); p_glEnd(); }
-    }
-    text(cx-textw(hostile?"CONDITION RED":"CONDITION GREEN",1.45f)/2,cy+rh+20,1.45f,hostile?"CONDITION RED":"CONDITION GREEN",hostile?1.0f:0.45f,hostile?0.28f:1.0f,0.48f);
+        /* Elite scanner: bottom centre with lollipop blips */
+        f32 cx=W/2, cy=H-104, rw=160, rh=62;
+        p_glColor4f(0.07f,0.11f,0.11f,0.82f);
+        p_glBegin(GL_QUADS); p_glVertex2f(cx-rw-22,cy-rh-22);p_glVertex2f(cx+rw+22,cy-rh-22);p_glVertex2f(cx+rw+22,cy+rh+26);p_glVertex2f(cx-rw-22,cy+rh+26);p_glEnd();
+        p_glColor4f(0.28f,0.90f,0.60f,0.62f);
+        p_glBegin(GL_LINE_LOOP); for(int i=0;i<48;i++){ f32 a=TAU*i/48; p_glVertex2f(cx+f_cos(a)*rw, cy+f_sin(a)*rh); } p_glEnd();
+        p_glPointSize(5);
+        p_glBegin(GL_POINTS); p_glVertex2f(cx,cy); p_glEnd();
+        const f32 scan_r = 5200.0f;
+        /* scanner uses local position within a fixed range, not pure direction.
+         *      That stops nearby contacts from vanishing under far contacts in the same bearing. */
+        { V3 rel=vsub(G.station,G.ppos); f32 fx=vdot(rel,G.pr), fy=vdot(rel,G.pu), fz=vdot(rel,G.pf); f32 d=vlen(rel); if(d>0.1f){
+            f32 sx=cx+clampf(fx/scan_r,-1,1)*rw*0.92f, sy=cy-clampf(fz/scan_r,-1,1)*rh*0.92f, stem=clampf(fy/900.0f,-1,1)*32.0f;
+            p_glColor3f(0.45f,0.75f,1.0f); p_glBegin(GL_LINES); p_glVertex2f(sx,sy); p_glVertex2f(sx,sy-stem); p_glEnd();
+            p_glBegin(GL_LINE_LOOP); p_glVertex2f(sx-4,sy-stem-4); p_glVertex2f(sx+4,sy-stem-4); p_glVertex2f(sx+4,sy-stem+4); p_glVertex2f(sx-4,sy-stem+4); p_glEnd(); }}
+            for(int i=0;i<G.ne;i++){ if(!G.e[i].alive)continue;
+                V3 rel=vsub(G.e[i].pos,G.ppos); f32 d=vlen(rel); if(d<0.1f) d=0.1f;
+                f32 fx=vdot(rel,G.pr), fy=vdot(rel,G.pu), fz=vdot(rel,G.pf);
+                f32 sx=cx+clampf(fx/scan_r,-1,1)*rw*0.90f, sy=cy-clampf(fz/scan_r,-1,1)*rh*0.90f, stem=clampf(fy/700.0f,-1,1)*30.0f;
+                int host=ship_hostile(&G.e[i]);
+                int tgt=(i==G.target);
+                f32 rr,gg,bb; ship_rgb(G.e[i].type,&rr,&gg,&bb);
+                if(G.e[i].type==SHIP_ALIEN){ f32 q=0.55f+0.45f*f_sin(G.t*17.0f+i*1.7f); rr*=q; bb=0.72f+0.28f*q; }
+                f32 fl=clampf(G.e[i].radar_flash*6.0f,0,1);
+                if(fl>0.02f){ rr=rr*(1.0f-fl)+1.0f*fl; gg=gg*(1.0f-fl)+1.0f*fl; bb=bb*(1.0f-fl)+0.25f*fl; }
+                p_glColor3f(rr,gg,bb);
+                p_glBegin(GL_LINES); p_glVertex2f(sx,sy); p_glVertex2f(sx,sy-stem); p_glEnd();
+                p_glPointSize((tgt?6.5f:4.6f) + fl*5.0f + (host?0.7f:0.0f));
+                p_glBegin(GL_POINTS); p_glVertex2f(sx,sy-stem); p_glEnd();
+                if(fl>0.02f){ p_glBegin(GL_LINE_LOOP); p_glVertex2f(sx-7,sy-stem-7); p_glVertex2f(sx+7,sy-stem-7); p_glVertex2f(sx+7,sy-stem+7); p_glVertex2f(sx-7,sy-stem+7); p_glEnd(); }
+                else if(tgt){ p_glBegin(GL_LINE_LOOP); p_glVertex2f(sx-5,sy-stem-5); p_glVertex2f(sx+5,sy-stem-5); p_glVertex2f(sx+5,sy-stem+5); p_glVertex2f(sx-5,sy-stem+5); p_glEnd(); }
+            }
+            text(cx-textw(hostile?"CONDITION RED":"CONDITION GREEN",1.45f)/2,cy+rh+20,1.45f,hostile?"CONDITION RED":"CONDITION GREEN",hostile?1.0f:0.45f,hostile?0.28f:1.0f,0.48f);
 
-    draw_ship_tags();
-    if(G.alert_t>0){
-        const char* msg = G.alert_code==1?"JUMP EXIT":G.alert_code==2?"HOSTILES ON ROUTE":G.alert_code==3?"CONTRABAND TRACE":G.alert_code==5?"DOCKING COMPLETE":G.alert_code==6?"LAUNCH CLEAR":"";
-        text(W/2-textw(msg,1.75f)/2, 72, 1.75f, msg, 0.95f,0.78f,0.38f);
-    }
-    if(G.wanted) text(W/2-textw("WANTED",2.0f)/2, 34, 2.0f, "WANTED", 0.95f,0.3f,0.3f);
-    if(G.laser_lockout) text(W/2-textw("LASER COOLING",1.8f)/2, H/2+52, 1.8f, "LASER COOLING", 1.0f,0.28f,0.22f);
-    else if(G.laser_heat>0.82f) text(W/2-textw("LASER HOT",1.8f)/2, H/2+52, 1.8f, "LASER HOT", 1.0f,0.55f,0.25f);
-    if(G.hull<18.0f) text(W/2-textw("ENERGY LOW",1.7f)/2, H/2+80, 1.7f, "ENERGY LOW", 1.0f,0.52f,0.22f);
-    if(G.docked_ok && !G.wanted) text(W/2-textw("PRESS F TO DOCK",1.8f)/2, H/2+58, 1.8f, "PRESS F TO DOCK", 0.7f,0.95f,0.8f);
+            draw_ship_tags();
+            if(G.alert_t>0){
+                const char* msg = G.alert_code==1?"JUMP EXIT":G.alert_code==2?"HOSTILES ON ROUTE":G.alert_code==3?"CONTRABAND TRACE":G.alert_code==5?"DOCKING COMPLETE":G.alert_code==6?"LAUNCH CLEAR":"";
+                text(W/2-textw(msg,1.75f)/2, 72, 1.75f, msg, 0.95f,0.78f,0.38f);
+            }
+            if(G.wanted) text(W/2-textw("WANTED",2.0f)/2, 34, 2.0f, "WANTED", 0.95f,0.3f,0.3f);
+            if(G.laser_lockout) text(W/2-textw("LASER COOLING",1.8f)/2, H/2+52, 1.8f, "LASER COOLING", 1.0f,0.28f,0.22f);
+            else if(G.laser_heat>0.82f) text(W/2-textw("LASER HOT",1.8f)/2, H/2+52, 1.8f, "LASER HOT", 1.0f,0.55f,0.25f);
+            if(G.hull<18.0f) text(W/2-textw("ENERGY LOW",1.7f)/2, H/2+80, 1.7f, "ENERGY LOW", 1.0f,0.52f,0.22f);
+            if(G.docked_ok && !G.wanted) text(W/2-textw("PRESS F TO DOCK",1.8f)/2, H/2+58, 1.8f, "PRESS F TO DOCK", 0.7f,0.95f,0.8f);
 }
 
 static void draw_station_nav(f32 H){
@@ -1857,22 +1877,22 @@ static void draw_market(void){
         f32 hl = (c==G.msel)?1.0f:0.6f;
         if(c==G.msel){ p_glColor4f(0.15f,0.2f,0.18f,0.8f);
             p_glBegin(GL_QUADS);p_glVertex2f(54,y-14);p_glVertex2f(700,y-14);p_glVertex2f(700,y+16);p_glVertex2f(54,y+16);p_glEnd(); }
-        text(60,y,1.7f,COM[c],hl*0.8f,hl*0.9f,hl*0.8f);
-        text(360,y,1.7f,itos(s->price[c]),hl*0.8f,hl*1.0f,hl*0.7f);
-        text(520,y,1.7f,itos(G.cargo[c]),hl*0.7f,hl*0.8f,hl*0.9f);
+            text(60,y,1.7f,COM[c],hl*0.8f,hl*0.9f,hl*0.8f);
+            text(360,y,1.7f,itos(s->price[c]),hl*0.8f,hl*1.0f,hl*0.7f);
+            text(520,y,1.7f,itos(G.cargo[c]),hl*0.7f,hl*0.8f,hl*0.9f);
     }
     f32 yb=200+NCOM*34+30;
     text(60,yb,1.6f,"UP/DN BUY/SELL",0.55f,0.6f,0.65f);
     text(60,yb+26,1.5f,"FUEL/HARDWARE IN EQUIP",0.55f,0.6f,0.65f);
-    { int d=map_best_dest(), bc=0, bu=0, tot=best_trade_total_to(d,&bc,&bu); 
-      if(tot>0&&bu>0){ 
-        char b1[20]; int k1=0; bcat(b1,&k1,"BEST STARTER");
-        text(60,yb+78,1.45f,b1,0.62f,0.86f,0.66f);
-        char b2[64]; int k=0; bcat(b2,&k,COM[bc]); bcat(b2,&k," -> "); bcat(b2,&k,gal[d].name); bcat(b2,&k,"  MAX +"); bnum(b2,&k,tot); bcat(b2,&k,"CR");
-        text(60,yb+98,1.45f,b2,0.62f,0.86f,0.66f);
-      } else {
-        text(60,yb+78,1.45f,"NO GOOD STARTER TRADE",0.70f,0.50f,0.45f);
-      }
+    { int d=map_best_dest(), bc=0, bu=0, tot=best_trade_total_to(d,&bc,&bu);
+        if(tot>0&&bu>0){
+            char b1[20]; int k1=0; bcat(b1,&k1,"BEST STARTER");
+            text(60,yb+78,1.45f,b1,0.62f,0.86f,0.66f);
+            char b2[64]; int k=0; bcat(b2,&k,COM[bc]); bcat(b2,&k," -> "); bcat(b2,&k,gal[d].name); bcat(b2,&k,"  MAX +"); bnum(b2,&k,tot); bcat(b2,&k,"CR");
+            text(60,yb+98,1.45f,b2,0.62f,0.86f,0.66f);
+        } else {
+            text(60,yb+78,1.45f,"NO GOOD STARTER TRADE",0.70f,0.50f,0.45f);
+        }
     }
     text(60,yb+110,1.45f,"LOOP: BUY CARGO  PICK ROUTE  SURVIVE RUN  DOCK",0.52f,0.64f,0.58f);
     draw_station_nav(H);
@@ -2095,36 +2115,36 @@ static void draw_map(void){
     f32 d=sys_dist_idx(G.cur,G.mapsel); int need=fuel_need_idx(G.cur,G.mapsel);
     py += 158;
     { char b[24]; char* a=itos((int)(d+0.5f)); int k=0; b[k++]='D';b[k++]='I';b[k++]='S';b[k++]='T';b[k++]=':';b[k++]=' '; int j=0; while(a[j])b[k++]=a[j++]; b[k++]=' ';b[k++]='L';b[k++]='Y'; b[k]=0;
-      text(px,py,1.6f,b, d<=G.jump_range?0.55f:0.95f, d<=G.jump_range?0.8f:0.35f,0.45f); }
-    { char b[24]; char* a=itos(G.fuel); int k=0; b[k++]='F';b[k++]='U';b[k++]='E';b[k++]='L';b[k++]=':';b[k++]=' '; int j=0; while(a[j])b[k++]=a[j++]; b[k++]='/'; a=itos(G.maxfuel); j=0; while(a[j])b[k++]=a[j++]; b[k]=0;
-      text(px,py+24,1.6f,b, G.fuel>=need?0.55f:0.95f, 0.75f,0.45f); }
-    { char b[24]; char* a=itos(need); int k=0; b[k++]='N';b[k++]='E';b[k++]='E';b[k++]='D';b[k++]=':';b[k++]=' '; int j=0; while(a[j])b[k++]=a[j++]; b[k]=0;
-      text(px,py+48,1.6f,b, G.fuel>=need?0.55f:0.95f, G.fuel>=need?0.9f:0.35f,0.45f); }
-    { char b[24]; char* a=itos((int)G.jump_range); int k=0; b[k++]='R';b[k++]='A';b[k++]='N';b[k++]='G';b[k++]='E';b[k++]=':';b[k++]=' '; int j=0; while(a[j])b[k++]=a[j++]; b[k++]=' ';b[k++]='L';b[k++]='Y'; b[k]=0;
-      text(px,py+72,1.6f,b,0.55f,0.68f,0.78f); }
+        text(px,py,1.6f,b, d<=G.jump_range?0.55f:0.95f, d<=G.jump_range?0.8f:0.35f,0.45f); }
+        { char b[24]; char* a=itos(G.fuel); int k=0; b[k++]='F';b[k++]='U';b[k++]='E';b[k++]='L';b[k++]=':';b[k++]=' '; int j=0; while(a[j])b[k++]=a[j++]; b[k++]='/'; a=itos(G.maxfuel); j=0; while(a[j])b[k++]=a[j++]; b[k]=0;
+            text(px,py+24,1.6f,b, G.fuel>=need?0.55f:0.95f, 0.75f,0.45f); }
+            { char b[24]; char* a=itos(need); int k=0; b[k++]='N';b[k++]='E';b[k++]='E';b[k++]='D';b[k++]=':';b[k++]=' '; int j=0; while(a[j])b[k++]=a[j++]; b[k]=0;
+                text(px,py+48,1.6f,b, G.fuel>=need?0.55f:0.95f, G.fuel>=need?0.9f:0.35f,0.45f); }
+                { char b[24]; char* a=itos((int)G.jump_range); int k=0; b[k++]='R';b[k++]='A';b[k++]='N';b[k++]='G';b[k++]='E';b[k++]=':';b[k++]=' '; int j=0; while(a[j])b[k++]=a[j++]; b[k++]=' ';b[k++]='L';b[k++]='Y'; b[k]=0;
+                    text(px,py+72,1.6f,b,0.55f,0.68f,0.78f); }
 
-    int bc=0, bu=0, total=best_trade_total_to(G.mapsel,&bc,&bu);
-    int tr=best_trade_to(G.mapsel,&bc), held=held_sale_profit_to(G.mapsel);
-    py += 118;
-    text(px,py,1.4f,"TRADE READOUT",0.42f,0.56f,0.62f);
-    if(total>0 && bu>0){
-        text(px,py+24,1.5f,"AFFORDABLE RUN",0.55f,0.78f,0.55f);
-        text(px,py+46,1.7f,COM[bc],0.8f,0.95f,0.65f);
-        { char b[24]; char* a=itos(bu); int k=0; b[k++]='U';b[k++]='N';b[k++]='I';b[k++]='T';b[k++]='S';b[k++]=' '; int j=0; while(a[j])b[k++]=a[j++]; b[k]=0; text(px+140,py+46,1.55f,b,0.68f,0.88f,0.75f); }
-        { char b[24]; char* a=itos(total); int k=0; b[k++]='+'; int j=0; while(a[j])b[k++]=a[j++]; b[k++]=' ';b[k++]='C';b[k++]='R'; b[k]=0; text(px,py+70,1.6f,b,0.7f,1.0f,0.65f); }
-    } else if(tr>0){
-        text(px,py+24,1.5f,"PROFIT EXISTS BUT CASH LOW",0.85f,0.68f,0.42f);
-        text(px,py+46,1.7f,COM[bc],0.8f,0.95f,0.65f);
-    } else text(px,py+24,1.5f,"NO OBVIOUS PROFIT",0.65f,0.55f,0.45f);
-    if(cargo_used()>0){ char b[28]; char* a=itos(held); int k=0; b[k++]='H';b[k++]='E';b[k++]='L';b[k++]='D';b[k++]=' ';b[k++]='C';b[k++]='A';b[k++]='R';b[k++]='G';b[k++]='O';b[k++]=':';b[k++]=' '; int j=0; while(a[j])b[k++]=a[j++]; b[k]=0; text(px,py+94,1.5f,b,held>=0?0.6f:0.9f,held>=0?0.85f:0.35f,0.55f); }
+                    int bc=0, bu=0, total=best_trade_total_to(G.mapsel,&bc,&bu);
+                    int tr=best_trade_to(G.mapsel,&bc), held=held_sale_profit_to(G.mapsel);
+                    py += 118;
+                    text(px,py,1.4f,"TRADE READOUT",0.42f,0.56f,0.62f);
+                    if(total>0 && bu>0){
+                        text(px,py+24,1.5f,"AFFORDABLE RUN",0.55f,0.78f,0.55f);
+                        text(px,py+46,1.7f,COM[bc],0.8f,0.95f,0.65f);
+                        { char b[24]; char* a=itos(bu); int k=0; b[k++]='U';b[k++]='N';b[k++]='I';b[k++]='T';b[k++]='S';b[k++]=' '; int j=0; while(a[j])b[k++]=a[j++]; b[k]=0; text(px+140,py+46,1.55f,b,0.68f,0.88f,0.75f); }
+                        { char b[24]; char* a=itos(total); int k=0; b[k++]='+'; int j=0; while(a[j])b[k++]=a[j++]; b[k++]=' ';b[k++]='C';b[k++]='R'; b[k]=0; text(px,py+70,1.6f,b,0.7f,1.0f,0.65f); }
+                    } else if(tr>0){
+                        text(px,py+24,1.5f,"PROFIT EXISTS BUT CASH LOW",0.85f,0.68f,0.42f);
+                        text(px,py+46,1.7f,COM[bc],0.8f,0.95f,0.65f);
+                    } else text(px,py+24,1.5f,"NO OBVIOUS PROFIT",0.65f,0.55f,0.45f);
+                    if(cargo_used()>0){ char b[28]; char* a=itos(held); int k=0; b[k++]='H';b[k++]='E';b[k++]='L';b[k++]='D';b[k++]=' ';b[k++]='C';b[k++]='A';b[k++]='R';b[k++]='G';b[k++]='O';b[k++]=':';b[k++]=' '; int j=0; while(a[j])b[k++]=a[j++]; b[k]=0; text(px,py+94,1.5f,b,held>=0?0.6f:0.9f,held>=0?0.85f:0.35f,0.55f); }
 
-    text(60,H-76,1.5f,"ARROWS SELECT TAB BEST",0.55f,0.6f,0.65f);
-    text(60,H-50,1.7f,"ENTER/J JUMP 5/6 DATA M BACK",0.62f,0.75f,0.72f);
-    if(can_jump_idx(G.mapsel)) text(60,H-24,1.8f,"> JUMP READY",0.5f,0.95f,0.7f);
-    else if(G.mapsel==G.cur) text(60,H-24,1.7f,"NO DESTINATION SELECTED",0.9f,0.55f,0.4f);
-    else if(d>G.jump_range) text(60,H-24,1.7f,"OUT OF JUMP RANGE",0.95f,0.45f,0.35f);
-    else text(60,H-24,1.7f,"BUY FUEL IN EQUIP",0.95f,0.45f,0.35f);
-    end2d();
+                    text(60,H-76,1.5f,"ARROWS SELECT",0.55f,0.6f,0.65f);
+                    text(60,H-50,1.7f,"ENTER/J JUMP 5 DATA M BACK",0.62f,0.75f,0.72f);
+                    if(can_jump_idx(G.mapsel)) text(60,H-24,1.8f,"> JUMP READY",0.5f,0.95f,0.7f);
+                    else if(G.mapsel==G.cur) text(60,H-24,1.7f,"NO DESTINATION SELECTED",0.9f,0.55f,0.4f);
+                    else if(d>G.jump_range) text(60,H-24,1.7f,"OUT OF JUMP RANGE",0.95f,0.45f,0.35f);
+                    else text(60,H-24,1.7f,"BUY FUEL IN EQUIP",0.95f,0.45f,0.35f);
+                    end2d();
 }
 
 static void draw_jump_screen(void){
@@ -2170,7 +2190,7 @@ static int music_di_l=0, music_di_r=0;
 
 static int music_state_on(void){
     return G.state==ST_TITLE || G.state==ST_MARKET || G.state==ST_STATUS ||
-           G.state==ST_DATA || G.state==ST_MANIFEST || G.state==ST_EQUIP || G.state==ST_MAP;
+    G.state==ST_DATA || G.state==ST_MANIFEST || G.state==ST_EQUIP || G.state==ST_MAP;
 }
 static f32 note_hz(int deg,int oct){
     static const f32 f[7]={110.00f,123.47f,130.81f,146.83f,164.81f,174.61f,196.00f};
@@ -2315,7 +2335,7 @@ static void title_start_game(void){
 static void update_title(const u8* ks){
     if(edge(ks,SC_BACKSPACE)) title_back(title_name);
     for(int i=0;i<26;i++) if(edge(ks,4+i)) title_add(title_name,12,(char)('A'+i));
-    if(edge(ks,SC_RETURN)||edge(ks,SC_SPACE)) title_start_game();
+    if(edge(ks,SC_RETURN)) title_start_game();
 }
 static void draw_title_screen(void){
     f32 W=G.win_w?G.win_w:1280, H=G.win_h?G.win_h:720;
