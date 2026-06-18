@@ -92,7 +92,7 @@ case "$COPT_OPT" in
   -*) ;;
   *) COPT_OPT="-$COPT_OPT" ;;
 esac
-DEFAULT_CFLAGS="$COPT_OPT -Wall -flto -fwhole-program -fno-plt -fno-pie -no-pie -fno-toplevel-reorder -fno-reorder-functions -fno-schedule-insns -fno-schedule-insns2 -fno-ipa-cp -fno-ipa-sra -fno-tree-sra -fno-expensive-optimizations -fno-asynchronous-unwind-tables -fno-unwind-tables -ffunction-sections -fdata-sections -fno-stack-protector -fomit-frame-pointer -fmerge-all-constants -fno-math-errno -fno-ident -fno-lto -fno-inline -fno-jump-tables -fno-code-hoisting -fno-tree-dominator-opts -fno-tree-fre -fno-tree-sink -fno-tree-slsr -fno-tree-forwprop"
+DEFAULT_CFLAGS="$COPT_OPT -Wall -fno-plt -fno-pie -no-pie -fno-toplevel-reorder -fno-reorder-functions -fno-schedule-insns -fno-schedule-insns2 -fno-ipa-cp -fno-ipa-sra -fno-tree-sra -fno-expensive-optimizations -fno-asynchronous-unwind-tables -fno-unwind-tables -ffunction-sections -fdata-sections -fno-stack-protector -fomit-frame-pointer -fmerge-all-constants -fno-math-errno -fno-ident -fno-lto -fno-inline -fno-jump-tables -fno-code-hoisting -fno-tree-dominator-opts -fno-tree-fre -fno-tree-sink -fno-tree-slsr -fno-tree-forwprop"
 DEFAULT_LDFLAGS="-fno-lto -no-pie -nostartfiles -Wl,-e,_start -Wl,--gc-sections -Wl,--build-id=none -Wl,-z,norelro -Wl,-z,noseparate-code -Wl,--as-needed -Wl,--hash-style=sysv"
 CFLAGS=${COPT_CFLAGS:-$DEFAULT_CFLAGS}
 LDFLAGS=${COPT_LDFLAGS:-$DEFAULT_LDFLAGS}

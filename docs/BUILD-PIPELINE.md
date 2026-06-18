@@ -32,6 +32,8 @@ The result is a raw ELF executable before compression.
 
 The selected source file's directory is added to the include path, followed by `compat/`, so a production can carry tiny local headers or use the bundled minimal SDL compatibility headers.
 
+The default flags intentionally keep LTO off. The current examples are tuned around repeated code patterns and final x86-BCJ/LZMA compressibility, not just the raw stripped ELF size.
+
 ## 3. Strip And Section Strip
 
 The script runs:
@@ -78,6 +80,8 @@ At runtime it:
 5. Exits with the wrapped program's exit code.
 
 The runner intentionally depends on `xz` being available on the target Linux system.
+
+This runner is optimized for byte count. It uses a predictable PID-based path under `/tmp`, writes the decompressed ELF to disk on each launch, and needs that temporary directory to allow execution. That is acceptable for Pouet-style release artifacts, but it is not a hardened launcher. A `memfd_create`/`fexecve` loader would be more robust and avoid both disk extraction and `noexec /tmp`, at the cost of extra loader bytes.
 
 ## 6. Size Report
 

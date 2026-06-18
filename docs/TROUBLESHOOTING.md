@@ -41,6 +41,8 @@ The build script prints `DT_NEEDED` for the raw ELF. If your C file uses SDL, Op
 
 For demoscene-style release builds, test the generated runner itself, not just the raw ELF. The runner also needs `xz` on the target system because it self-extracts from raw x86+LZMA data.
 
+The generated runner extracts to `/tmp` before launching the payload. If `/tmp` is mounted `noexec`, the shell stub can build fine but fail at runtime when it tries to execute the extracted ELF. This is a known byte-count trade-off; a future memfd/fexecve loader would be more robust but larger.
+
 The included VOIDRUNNER/nervk examples are interactive SDL/OpenGL programs. They need a real display or headless GL setup. `SDL_VIDEODRIVER=dummy` is not a full runtime smoke for them.
 
 ## SDL Headers Are Minimal
