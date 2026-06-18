@@ -42,7 +42,10 @@ error_box() {
 }
 
 if [ "$#" -gt 0 ]; then
-  exec "$HERE/build_asm_syscall.sh" "$@"
+  if [ "${COPT_HOST_BUILD:-0}" = 1 ]; then
+    exec "$HERE/build_asm_syscall.sh" "$@"
+  fi
+  exec "$HERE/build_gcc9_bullseye.sh" "$@"
 fi
 
 src=$(pick_file)
@@ -56,7 +59,13 @@ safe_name=$(printf '%s' "$stem" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-
 out="$(dirname -- "$src_abs")/$safe_name"
 log=$(mktemp "${TMPDIR:-/tmp}/c-optimizer-log.XXXXXX")
 
-if "$HERE/build_asm_syscall.sh" "$src_abs" >"$log" 2>&1; then
+if [ "${COPT_HOST_BUILD:-0}" = 1 ]; then
+  builder="$HERE/build_asm_syscall.sh"
+else
+  builder="$HERE/build_gcc9_bullseye.sh"
+fi
+
+if "$builder" "$src_abs" >"$log" 2>&1; then
   if command -v notify-send >/dev/null 2>&1 && [ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]; then
     notify-send "C Optimizer" "Built $(basename -- "$out")" 2>/dev/null || true
   fi

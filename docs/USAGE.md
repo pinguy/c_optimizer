@@ -16,11 +16,15 @@ For a host-compiler build, use:
 ./build_asm_syscall.sh nervk.c
 ```
 
+Host builds are for fast experiments, not release-size claims. The same source can cross a size limit with the host compiler while staying under it with the pinned GCC 9 wrapper.
+
 For a GUI picker, use:
 
 ```bash
 ./run_c_optimizer.sh
 ```
+
+The picker uses the pinned GCC 9 Bullseye wrapper by default. To deliberately test the host compiler through the picker or launcher, set `COPT_HOST_BUILD=1`.
 
 Examples:
 
@@ -44,7 +48,7 @@ Run:
 ./run_c_optimizer.sh
 ```
 
-If `kdialog` or `zenity` is available, a graphical picker opens. Without a graphical picker, the script prompts for a path in the terminal.
+If `kdialog` or `zenity` is available, a graphical picker opens. Without a graphical picker, the script prompts for a path in the terminal. The selected file is built with the pinned GCC 9 wrapper unless `COPT_HOST_BUILD=1` is set.
 
 ## Install The Desktop Launcher
 
