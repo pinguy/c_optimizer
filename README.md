@@ -36,6 +36,7 @@ The `examples/` directory includes real single-file sources from that lineage:
 
 - `examples/VOIDRUNNER.c`
 - `examples/nervk.c`
+- `examples/ECHOHULL.c`
 
 ## Quick Start
 
@@ -117,11 +118,12 @@ That shell runner is a sizecoding trade-off, not a hardened installer. It keeps 
 
 That writes `examples/nervk`. Generated example runners are ignored by git.
 
-Build both real examples:
+Build the real examples:
 
 ```bash
 ./build_gcc9_bullseye.sh examples/nervk.c
 ./build_gcc9_bullseye.sh examples/VOIDRUNNER.c
+./build_gcc9_bullseye.sh examples/ECHOHULL.c
 ```
 
 To send output somewhere else, set `OUT`:

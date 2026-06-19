@@ -1,9 +1,10 @@
 # Examples
 
-The repository includes two example sources:
+The repository includes three example sources:
 
 - `examples/VOIDRUNNER.c` - real single-file procedural space-trader / combat game source.
 - `examples/nervk.c` - real single-file 96K-spirit procedural game source.
+- `examples/ECHOHULL.c` - experimental sonar-salvage horror game source built in the same no-assets style.
 
 The real examples are intentionally large enough to show why C Optimizer exists: they generate assets at runtime, use a single C translation unit, and benefit from the custom `_start`, stripping, BCJ, LZMA, and shell-runner path.
 
@@ -34,6 +35,7 @@ By default, generated runners are written beside the selected source file. The e
 ```bash
 ./build_gcc9_bullseye.sh examples/nervk.c
 ./build_gcc9_bullseye.sh examples/VOIDRUNNER.c
+./build_gcc9_bullseye.sh examples/ECHOHULL.c
 ```
 
 On the current reference machine, the GCC 9 wrapper produced:
@@ -52,6 +54,13 @@ VOIDRUNNER:
   sstrip:   81.2 KiB (83,136 bytes, 665,088 bits)
   bcj/lzma: 32.6 KiB (33,396 bytes, 267,168 bits)
   runner:   32.8 KiB (33,543 bytes, 268,344 bits)
+  NEEDED:   libdl.so.2
+
+ECHOHULL:
+  strip:    17.5 KiB (17,960 bytes, 143,680 bits)
+  sstrip:   16.3 KiB (16,732 bytes, 133,856 bits)
+  bcj/lzma: 7.74 KiB (7,930 bytes, 63,440 bits)
+  runner:   7.89 KiB (8,077 bytes, 64,616 bits)
   NEEDED:   libdl.so.2
 ```
 

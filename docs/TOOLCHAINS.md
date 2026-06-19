@@ -10,7 +10,7 @@ The repo includes a Podman-backed Debian Bullseye GCC 9 wrapper:
 ./build_gcc9_bullseye.sh nervk.c
 ```
 
-That writes `./nervk`. From this checkout, use `examples/nervk.c` or `examples/VOIDRUNNER.c`; the generated `examples/nervk` and `examples/voidrunner` files are ignored by git.
+That writes `./nervk`. From this checkout, use `examples/nervk.c`, `examples/VOIDRUNNER.c`, or `examples/ECHOHULL.c`; generated example runners are ignored by git.
 
 On first use, the wrapper builds this local image:
 

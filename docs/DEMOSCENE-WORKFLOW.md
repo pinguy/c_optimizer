@@ -17,7 +17,7 @@ The workflow was shaped by projects like:
 
 These are native Linux procedural game/intros where the interesting work is not just making a file small, but keeping enough actual game or demo inside the size limit to still feel real.
 
-`examples/VOIDRUNNER.c` and `examples/nervk.c` are included so users can build real productions, not only toy programs.
+`examples/VOIDRUNNER.c`, `examples/nervk.c`, and `examples/ECHOHULL.c` are included so users can build real productions and experiments, not only toy programs.
 
 ## Good Fit
 
