@@ -139,7 +139,7 @@ rm -f "$SST".bcj.lc*.pb*.d* 2>/dev/null || true
 printf '[build] bcj/lzma:%s (raw x86+lzma lc=%s pb=%s dict=%s)\n' "$(format_size "$(stat -c%s "$SST.bcj")")" "$best_lc" "$best_pb" "$best_dict"
 cat > "$RUNNER_TMP" <<STUB
 #!/bin/sh
-a=/tmp/v\$\$;trap 'rm -f "\$a"' 0;tail -n+3 "\$0"|xz -Fraw --x86 --lzma1=lc=$best_lc,pb=$best_pb,dict=$best_dict -d>"\$a";chmod +x "\$a";"\$a" "\$@";r=\$?;exit "\$r"
+a=/tmp/v\$\$;trap 'rm -f "\$a"' 0;tail -n+3 "\$0"|xz -Fraw --x86 --lzma1=lc=$best_lc,pb=$best_pb,dict=$best_dict -dc>"\$a";chmod +x "\$a";"\$a" "\$@";r=\$?;exit "\$r"
 STUB
 cat "$SST.bcj" >> "$RUNNER_TMP"
 mv "$RUNNER_TMP" "$OUT"
