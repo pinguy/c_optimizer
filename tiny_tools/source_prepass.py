@@ -119,7 +119,20 @@ def libc_indirection(src, actions):
     if not leftover_heap and not unsupported_stdlib and need_strtoul:
         src = drop_include(src, "stdlib.h")
     if need_memset or need_memcpy:
-        src = drop_include(src, "string.h")
+        # Keep string.h when other declarations are still needed. Removing it
+        # breaks source that uses strcmp/strlen/strchr/etc alongside memset.
+        other_string_calls = any(
+            has_call(src, name)
+            for name in (
+                "strcmp", "strncmp", "memcmp", "memmove", "memchr", "strlen",
+                "strnlen", "strcpy", "strncpy", "strcat", "strncat", "strchr",
+                "strrchr", "strstr", "strspn", "strcspn", "strpbrk", "strtok",
+                "strerror", "strdup", "strndup", "strcoll", "strxfrm",
+                "strncasecmp", "strcasecmp",
+            )
+        )
+        if not other_string_calls:
+            src = drop_include(src, "string.h")
         src = ensure_include(src, "stddef.h")
     if need_snprintf:
         src = ensure_include(src, "stddef.h")

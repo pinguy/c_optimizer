@@ -37,6 +37,7 @@ The `examples/` directory includes real single-file sources from that lineage:
 - `examples/VOIDRUNNER.c`
 - `examples/nervk.c`
 - `examples/ECHOHULL.c`
+- `examples/TETHER9.c` - new 8 KiB-class orbital salvage arcade game, with build guide in [TETHER9-README.md](TETHER9-README.md).
 
 ## Quick Start
 

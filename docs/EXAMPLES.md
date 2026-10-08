@@ -98,3 +98,7 @@ LIBGL_ALWAYS_SOFTWARE=1 timeout 10s xvfb-run -a examples/nervk --seed 1
 ```
 
 Without Xvfb, `SDL_VIDEODRIVER=dummy` is only a runner sanity check. These examples may reach display setup and then fail or wait because they need an OpenGL-capable video backend.
+
+## TETHER/9 — added orbital-salvage example
+
+`examples/TETHER9.c` is a new tiny arcade game with spring-tether recovery, drones, EMP, generated music and glyphs. For source, controls, benchmarks and tests see [TETHER9-README.md](../TETHER9-README.md). Build with `./BUILD_TETHER9.sh`.
