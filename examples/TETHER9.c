@@ -1,6 +1,9 @@
-/* TETHER/9 — single-source procedural orbital salvage arcade game.
+/* TETHER/9: SLINGSHOT — size-budget variant, ships under the 8K line.
+ * Same game, three adds: delivery chains (x5 max), one golden hot pod per
+ * wave (+150), and a slingshot bonus for captures made at ship speed >230.
+ * Telemetry lives in tether9_fun_tele.c so fprintf stays out of this binary.
  * SPDX-License-Identifier: MIT. Built for C Optimizer as a standalone example.
- * Build: COPT_EXTRA_LDLIBS='-ldl -lm' sh build_asm_syscall.sh examples/TETHER9.c
+ * Build: COPT_EXTRA_LDLIBS='-ldl -lm' sh build_asm_syscall.sh examples/TETHER9_fun.c
  * Linux x86-64 / SDL2 / compatibility OpenGL; no asset files.
  */
 #include <SDL2/SDL.h>
@@ -106,10 +109,12 @@ typedef struct {float x,y,vx,vy,life,size;int kind;} Spark;
 static Pod pods[NP];static Drone drones[ND];static Spark sparks[FX];
 static struct {
  float x,y,vx,vy,angle,energy,pulse,pulse_timer,hp,t,shake,combo,frame;
- int state,wave,delivered,quota,score,tether,full,ss,shot,test_ticks;
+ int state,wave,delivered,quota,score,tether,full,ss,shot,test_ticks,chain,hotpod;
+ float tag_t;
  unsigned seed;
 } G;
 static int particle_at;
+static char tagbuf[16]; /* SLINGSHOT: last event tag, gated by G.tag_t. */
 static int nd,np;
 static int vsw=960,vsh=600;
 static SDL_AudioDeviceID audio_dev;
@@ -133,6 +138,8 @@ static void spawn_wave(void){
   float a=(i+rnd()*.4f)*TAU/nd,r=310+rnd()*170;
   drones[i]=(Drone){WX*.5f+cosf(a)*r,WY*.5f+sinf(a)*r,0,0,rnd()*8,2};
  }
+ /* SLINGSHOT: one golden pod per wave pays +150. rng untouched: same map as stock. */
+ G.hotpod=G.wave%np;
  G.tether=-1;
 }
 static void new_game(unsigned seed){
@@ -164,7 +171,7 @@ static void step(float dt,int left,int right,int thrust,int brake,int boost){
  G.t+=dt;G.frame+=1;
  G.angle=wrapang(G.angle+(right-left)*3.25f*dt);
  float acc=thrust?330:0;
- if(boost&&G.energy>1&&thrust){acc*=2;G.energy-=36*dt;G.shake=.045f;}
+ if(boost&&G.energy>1&&thrust){acc*=2;G.energy-=30*dt;G.shake=.045f;}
  else G.energy=clamp(G.energy+9*dt,0,100);
  G.vx+=cosf(G.angle)*acc*dt;G.vy+=sinf(G.angle)*acc*dt;
  if(brake){G.vx*=1-2.5f*dt;G.vy*=1-2.5f*dt;}
@@ -177,6 +184,7 @@ static void step(float dt,int left,int right,int thrust,int brake,int boost){
  if(G.pulse_timer>0)G.pulse_timer-=dt;
  if(G.shake>0)G.shake-=dt;
  if(G.combo>0)G.combo-=dt;
+ G.tag_t-=dt;
  /* Spring cable: movement and dragging are physically coupled. */
  if(G.tether>=0){
   Pod*p=&pods[G.tether];float dx=G.x-p->x,dy=G.y-p->y,r=length(dx,dy);
@@ -194,7 +202,14 @@ static void step(float dt,int left,int right,int thrust,int brake,int boost){
   p->x=clamp(p->x,12,WX-12);p->y=clamp(p->y,19,WY-19);
   /* Only a tethered pod can enter the orbital station's capture field. */
   if(G.tether==i && dist(p->x,p->y,WX*.5f,WY*.5f)<47){
-   p->state=1;G.tether=-1;G.delivered++;G.score+=100+(G.combo>0?75:0)+G.wave*25;
+   p->state=1;G.tether=-1;G.delivered++;
+   /* SLINGSHOT: chain grows while deliveries land within 8s of each other. */
+   G.chain=G.combo>0?G.chain<5?G.chain+1:5:1;
+   {int sl=p->vx*p->vx+p->vy*p->vy>14400,hot=i==G.hotpod; /* sling: pod >120 */
+    int pts=100+hot*150+50*G.chain+100*sl;
+    if(sl)G.shake=.15f,snprintf(tagbuf,16,"SLING+%d",pts),G.tag_t=1.1f;
+    G.score+=pts;
+   }
    G.combo=8;G.energy=clamp(G.energy+18,0,100);particle(p->x,p->y,0,28);
   }
  }
@@ -217,7 +232,7 @@ static void step(float dt,int left,int right,int thrust,int brake,int boost){
  }
  if(G.delivered>=G.quota){
   G.score+=G.wave*200;G.wave++;G.quota=G.wave+3;if(G.quota>NP)G.quota=NP;
-  spawn_wave();G.hp=clamp(G.hp+22,0,100);G.energy=100;
+  spawn_wave();G.hp=clamp(G.hp+14,0,100);G.energy=100;
   particle(WX*.5f,WY*.5f,1,60);
  }
  if(G.hp<=0){G.hp=0;G.state=2;G.tether=-1;particle(G.x,G.y,2,65);}
@@ -331,8 +346,9 @@ static void render(void){
  col(.3f,.9f,.95f,1);text(cx-27,cy-4,1.5f,"DOCK");
  for(int i=0;i<np;i++)if(!pods[i].state){
   Pod *p=&pods[i];float flick=.7f+.3f*sinf(G.t*4+i*2);
+  /* SLINGSHOT: the hot pod is the gold crate — body burns, halo stays stock. */
   col(.9f,.62f,.17f,.15f*flick);ring(p->x,p->y,15,20);
-  col(1,.7f,.26f,1);box(p->x-7,p->y-7,14,14);
+  col(1,.7f+.25f*(i==G.hotpod),.26f,1);box(p->x-7,p->y-7,14,14);
   col(.11f,.17f,.27f,1);box(p->x-4,p->y-4,8,8);
   col(1,.8f,.52f,1);line(p->x-10,p->y,p->x-15,p->y);line(p->x+10,p->y,p->x+15,p->y);
  }
@@ -380,7 +396,8 @@ static void render(void){
  col(.73f,.85f,1,1);text(440,10,1.9f,"SCORE");number(440,30,G.score,2.5f);
  col(.78f,.9f,1,1);text(603,10,1.7f,"HULL");hud_bar(603,33,G.hp,1);
  text(738,10,1.7f,"CHARGE");hud_bar(738,33,G.energy,0);
- col(.59f,.72f,.83f,1);text(22,WY-27,1.7f,"W THRUST  A/D TURN  S BRAKE  SPACE TETHER  E PULSE  SHIFT BOOST");
+ col(.59f,.72f,.83f,1);text(22,WY-27,1.7f,"W THRUST A/D TURN S BRAKE SPACE TETHER E PULSE SHIFT BOOST");
+ if(G.tag_t>0)col(1,.85f,.3f,G.tag_t),text(430,WY-72,2.5f,tagbuf); /* SLINGSHOT */
  if(G.state==0||G.state==2){
   col(.01f,.018f,.042f,.91f);box(135,176,690,254);
   col(.2f,.76f,.94f,.85f);ring(480,300,214,96);
