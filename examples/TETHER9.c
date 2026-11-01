@@ -53,9 +53,15 @@ static Uint32 (*p_SDL_GetQueuedAudioSize)(SDL_AudioDeviceID);
 static int (*p_SDL_QueueAudio)(SDL_AudioDeviceID,const void*,Uint32);
 static void (*p_SDL_Delay)(Uint32);
 void glLineWidth(GLfloat width);
+/* glPointSize was loaded but never called; glReadPixels is rig-only (CAPTURE_BUILD). */
+#ifdef CAPTURE_BUILD
+#define GFC(X) X(glReadPixels)
+#else
+#define GFC(X)
+#endif
 #define GF(X) X(glBegin) X(glEnd) X(glVertex2f) X(glColor4f) X(glClearColor) X(glClear) \
  X(glBlendFunc) X(glEnable) X(glMatrixMode) X(glLoadIdentity) X(glOrtho) \
- X(glViewport) X(glLineWidth) X(glPointSize) X(glReadPixels)
+ X(glViewport) X(glLineWidth) GFC(X)
 #define D(X) static typeof(X)* p_##X;
 GF(D)
 #undef D
@@ -132,7 +138,7 @@ static void spawn_wave(void){
  G.delivered=0; np=G.quota; nd=2+G.wave; if(nd>ND)nd=ND;
  for(int i=0;i<np;i++){
   float a=TAU*(i+rnd()*.3f)/np,r=174+rnd()*205;
-  pods[i]=(Pod){WX*.5f+cosf(a)*r,WY*.5f+sinf(a)*r,0,0,0};
+  pods[i]=(Pod){WX*.5f+cosf(a)*r,clamp(WY*.5f+sinf(a)*r,75,553),0,0,0};
  }
  for(int i=0;i<nd;i++){
   float a=(i+rnd()*.4f)*TAU/nd,r=310+rnd()*170;
@@ -199,7 +205,7 @@ static void step(float dt,int left,int right,int thrust,int brake,int boost){
  for(int i=0;i<np;i++)if(!pods[i].state){
   Pod*p=&pods[i];p->x+=p->vx*dt;p->y+=p->vy*dt;
   p->vx*=1-.6f*dt;p->vy*=1-.6f*dt;
-  p->x=clamp(p->x,12,WX-12);p->y=clamp(p->y,19,WY-19);
+  p->x=clamp(p->x,12,WX-12);p->y=clamp(p->y,75,WY-47); /* pods clear the HUD bars: 75>67+7, 553<561-7 */
   /* Only a tethered pod can enter the orbital station's capture field. */
   if(G.tether==i && dist(p->x,p->y,WX*.5f,WY*.5f)<47){
    p->state=1;G.tether=-1;G.delivered++;
